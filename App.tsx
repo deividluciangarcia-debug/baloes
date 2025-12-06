@@ -37,6 +37,8 @@ const SectionLoader = () => (
 export default function App() {
   const [spotsLeft, setSpotsLeft] = useState(27); 
   const [showMobileCta, setShowMobileCta] = useState(false);
+  // Estado para controlar quais seções devem ocultar as barras fixas
+  const [sectionsHidingBars, setSectionsHidingBars] = useState<Set<string>>(new Set());
   const [ultimatumType, setUltimatumType] = useState<'exit' | 'scarcity' | null>(null);
   const [onlineUsers, setOnlineUsers] = useState(118);
   const [hasShownExitIntent, setHasShownExitIntent] = useState(false);
@@ -45,15 +47,44 @@ export default function App() {
 
   const stateRef = useRef({ showDownsellPage, downsellStep });
 
+  const hideStickyBars = sectionsHidingBars.size > 0;
+
   useEffect(() => {
     stateRef.current = { showDownsellPage, downsellStep };
   }, [showDownsellPage, downsellStep]);
 
+  // Lógica Avançada de Back Redirect (Mobile + Desktop)
   useEffect(() => {
-    window.history.pushState(null, '', window.location.href);
+    let historyPushed = false;
+
+    // Função para empurrar o estado no histórico
+    const pushHistoryState = () => {
+      if (!historyPushed) {
+        window.history.pushState(null, '', window.location.href);
+        historyPushed = true;
+      }
+    };
+
+    // Tenta imediatamente ao carregar
+    pushHistoryState();
+
+    // Tenta novamente na primeira interação (scroll, toque ou clique)
+    // Isso garante que funcione em navegadores mobile que bloqueiam manipulação de histórico sem interação
+    const handleInteraction = () => {
+      pushHistoryState();
+      // Remove os listeners após a primeira interação para não pesar
+      window.removeEventListener('scroll', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
+      window.removeEventListener('click', handleInteraction);
+    };
+
+    window.addEventListener('scroll', handleInteraction);
+    window.addEventListener('touchstart', handleInteraction);
+    window.addEventListener('click', handleInteraction);
 
     const handlePopState = (event: PopStateEvent) => {
       event.preventDefault();
+      // Empurra novamente para "prender" o usuário na frente
       window.history.pushState(null, '', window.location.href);
       
       const { showDownsellPage: isShowing, downsellStep: currentStep } = stateRef.current;
@@ -67,7 +98,12 @@ export default function App() {
     };
 
     window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('scroll', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
+      window.removeEventListener('click', handleInteraction);
+    };
   }, []);
 
   useEffect(() => {
@@ -114,8 +150,53 @@ export default function App() {
     return () => document.removeEventListener('mouseleave', handleExitIntent);
   }, [hasShownExitIntent, spotsLeft, showDownsellPage, ultimatumType]);
 
+  // Observer ROBUSTO para monitorar Preços E Galeria
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        setSectionsHidingBars((prev) => {
+          const newSet = new Set(prev);
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              newSet.add(entry.target.id);
+            } else {
+              newSet.delete(entry.target.id);
+            }
+          });
+          return newSet;
+        });
+      },
+      { threshold: 0.1 } 
+    );
+
+    // Monitora a seção de preços e a galeria de produtos
+    // Usa polling para garantir que elementos Lazy Loaded sejam encontrados
+    const checkForElements = setInterval(() => {
+      const pricingSection = document.getElementById('pricing');
+      const gallerySection = document.getElementById('product-gallery');
+      
+      let foundAll = true;
+      
+      if (pricingSection) observer.observe(pricingSection);
+      else foundAll = false;
+
+      if (gallerySection) observer.observe(gallerySection);
+      else foundAll = false;
+
+      if (foundAll) {
+        clearInterval(checkForElements);
+      }
+    }, 500);
+
+    return () => {
+      clearInterval(checkForElements);
+      observer.disconnect();
+    };
+  }, []);
+
   useEffect(() => {
     const handleScroll = () => {
+      // Mostra o CTA mobile apenas se rolou um pouco
       setShowMobileCta(window.scrollY > 900);
     };
     window.addEventListener('scroll', handleScroll);
@@ -169,7 +250,15 @@ export default function App() {
          <SalesNotifications />
       </Suspense>
 
-      <div className={`${getStickyBarColor()} text-white py-2 px-2 md:px-4 text-center text-[10px] md:text-sm font-semibold sticky top-0 z-50 shadow-xl flex flex-col md:flex-row justify-center items-center md:gap-6 gap-1 border-b border-gold-500/30`}>
+      {/* BARRA FIXA DO TOPO - Oculta quando hideStickyBars é true */}
+      <div 
+        className={`
+          ${getStickyBarColor()} text-white py-2 px-2 md:px-4 text-center text-[10px] md:text-sm font-semibold 
+          sticky top-0 z-50 shadow-xl flex flex-col md:flex-row justify-center items-center md:gap-6 gap-1 
+          border-b border-gold-500/30 transition-transform duration-500
+          ${hideStickyBars ? '-translate-y-full' : 'translate-y-0'}
+        `}
+      >
         <div className="flex items-center gap-2 drop-shadow-sm">
             <Timer className="w-3 h-3 md:w-4 md:h-4 text-gold-400" />
             <span>
@@ -237,9 +326,10 @@ export default function App() {
         <Footer />
       </Suspense>
 
+      {/* BARRA FIXA DO RODAPÉ (MOBILE) - Oculta quando hideStickyBars é true */}
       <div 
         className={`fixed bottom-0 left-0 w-full bg-white border-t-2 border-gold-500 p-3 md:hidden z-40 shadow-[0_-4px_20px_rgba(0,0,0,0.2)] transition-transform duration-500 ease-in-out ${
-          showMobileCta ? 'translate-y-0' : 'translate-y-full'
+          showMobileCta && !hideStickyBars ? 'translate-y-0' : 'translate-y-full'
         }`}
       >
         <button 

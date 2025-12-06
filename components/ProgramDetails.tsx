@@ -1,6 +1,14 @@
 import React from 'react';
 import { Gift, PlayCircle, Star } from 'lucide-react';
 
+const optimizeImage = (url: string, width = 150) => {
+  if (!url) return '';
+  // O Imgur bloqueia proxies de otimização, então carregamos direto
+  if (url.includes('imgur.com')) return url;
+
+  return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${width}&fit=cover&q=80&output=webp`;
+};
+
 const ProgramDetails: React.FC = () => {
   const modules = [
     { 
@@ -111,7 +119,14 @@ const ProgramDetails: React.FC = () => {
                         {/* Shimmer effect */}
                         <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-40 group-hover:animate-shine" />
                         
-                        <img src={bonus.img} alt={bonus.name} className="w-24 h-24 rounded-lg object-cover bg-slate-200 shadow-md" />
+                        <img 
+                            src={optimizeImage(bonus.img)} 
+                            alt={bonus.name} 
+                            className="w-24 h-24 rounded-lg object-cover bg-slate-200 shadow-md" 
+                            loading="lazy"
+                            width="96"
+                            height="96"
+                        />
                         
                         <div className="flex-1">
                           {/* Highlighting the VIP Badge */}

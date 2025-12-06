@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Clock, DollarSign, TrendingUp, BarChart, Star } from 'lucide-react';
 
+// Função auxiliar para otimizar imagens
+const optimizeImage = (url: string, width = 400) => {
+  if (!url) return '';
+  // O Imgur bloqueia proxies de otimização, então carregamos direto
+  if (url.includes('imgur.com')) return url;
+  
+  // Para outros sites, usa wsrv.nl para redimensionar e converter para WebP
+  return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${width}&fit=cover&q=80&output=webp`;
+};
+
 const products = [
   {
     name: "Topo de Bolo (Balloon Topper)",
@@ -106,10 +116,6 @@ const products = [
 const ProductGallery: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(1);
-  const [imagesLoaded, setImagesLoaded] = useState(false);
-
-  // Preload images logic removed because standard lazy loading is better for LCP/PSI score
-  // We rely on browser native loading="lazy"
 
   // Responsive items per page
   useEffect(() => {
@@ -153,7 +159,7 @@ const ProductGallery: React.FC = () => {
   });
 
   return (
-    <section className="py-20 bg-slate-100">
+    <section id="product-gallery" className="py-20 bg-slate-100">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-emerald-950 font-serif mb-4">
@@ -183,7 +189,6 @@ const ProductGallery: React.FC = () => {
           </button>
 
           {/* Grid Container acting as Carousel */}
-          {/* Using product.name as key ensures React reuses the DOM nodes instead of recreating them, which prevents image reloading */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {visibleProducts.map((product) => (
                <div 
@@ -200,9 +205,10 @@ const ProductGallery: React.FC = () => {
                       </div>
                   )}
 
-                  <div className="h-48 overflow-hidden relative group">
+                  {/* AUMENTADO AINDA MAIS: h-80 mobile, h-96 desktop */}
+                  <div className="h-80 md:h-96 overflow-hidden relative group">
                     <img 
-                      src={product.image} 
+                      src={optimizeImage(product.image, 400)} 
                       alt={product.name} 
                       className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
                       loading="lazy"

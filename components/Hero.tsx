@@ -37,8 +37,9 @@ const Hero: React.FC<HeroProps> = ({ onCtaClick, onLearnMoreClick, spotsLeft }) 
             </span>
           </h1>
           
-          <p className="text-lg md:text-2xl text-emerald-100/90 mb-10 max-w-3xl mx-auto leading-relaxed font-light">
-            O único mercado onde você fatura <strong className="text-white border-b-2 border-gold-500">até R$5.000 por fim de semana</strong>, trabalhando apenas 2 dias e folgando 5.
+          {/* Texto Melhorado: Removido whitespace-nowrap para fluir melhor no mobile */}
+          <p className="text-lg md:text-2xl text-emerald-100/90 mb-10 max-w-4xl mx-auto leading-relaxed font-light px-2">
+            O único mercado onde você fatura <strong className="text-white border-b-2 border-gold-500 font-bold">até R$5.000</strong> por fim de semana, trabalhando apenas <span className="font-semibold text-white">2 dias</span> e folgando <span className="font-semibold text-white">5 dias</span>.
           </p>
 
           <div className="flex flex-col md:flex-row gap-5 justify-center items-center w-full md:w-auto">
