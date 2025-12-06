@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Lock, X, CheckCircle } from 'lucide-react';
+import { ShieldCheck, Lock, X, CheckCircle, CreditCard, Sparkles } from 'lucide-react';
 
 interface PricingProps {
   onCtaClick: () => void;
@@ -7,7 +7,6 @@ interface PricingProps {
 }
 
 const Pricing: React.FC<PricingProps> = ({ onCtaClick, spotsLeft }) => {
-  // Logic to show a date 2 days from now to create real urgency anchor
   const today = new Date();
   const futureDate = new Date(today);
   futureDate.setDate(today.getDate() + 2);
@@ -18,171 +17,131 @@ const Pricing: React.FC<PricingProps> = ({ onCtaClick, spotsLeft }) => {
   };
 
   return (
-    <section id="pricing" className="py-20 bg-gradient-to-b from-white to-emerald-50">
+    <section id="pricing" className="py-24 bg-emerald-50">
       <div className="container mx-auto px-4">
         
-        {/* Comparison Table */}
+        {/* Tabela de Comparação de Valor */}
         <div className="max-w-4xl mx-auto mb-20 hidden md:block">
-          <h3 className="text-2xl font-bold text-center mb-8 text-emerald-950">Por Que Escolher o Balões Lucrativos?</h3>
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200">
+          <div className="text-center mb-10">
+              <h3 className="text-2xl font-bold text-emerald-950 uppercase tracking-widest">O Que Você Está Levando</h3>
+              <div className="w-24 h-1 bg-gold-500 mx-auto mt-2"></div>
+          </div>
+          
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-emerald-100">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-emerald-950 text-white">
-                  <th className="p-4 font-medium">Benefício</th>
-                  <th className="p-4 font-medium text-center opacity-75">Outros Cursos</th>
-                  <th className="p-4 font-bold text-center bg-gold-500 text-white">Balões Lucrativos</th>
+                  <th className="p-5 font-serif text-lg tracking-wide">Benefício</th>
+                  <th className="p-5 font-medium text-center opacity-60 text-sm uppercase">Cursos Amadores</th>
+                  <th className="p-5 font-bold text-center bg-gold-500 text-emerald-950 text-lg uppercase tracking-wider shadow-md">Balões Lucrativos</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-sm">
-                <tr>
-                  <td className="p-4 text-slate-700">Foco em Vendas e Lucro</td>
-                  <td className="p-4 text-center text-red-400">✖</td>
-                  <td className="p-4 text-center text-gold-600 font-bold bg-amber-50">✔</td>
-                </tr>
-                <tr>
-                  <td className="p-4 text-slate-700">Certificado Profissional</td>
-                  <td className="p-4 text-center text-red-400">✖</td>
-                  <td className="p-4 text-center text-gold-600 font-bold bg-amber-50">✔</td>
-                </tr>
-                <tr>
-                  <td className="p-4 text-slate-700">Modelos de Contrato</td>
-                  <td className="p-4 text-center text-red-400">✖</td>
-                  <td className="p-4 text-center text-gold-600 font-bold bg-amber-50">✔</td>
-                </tr>
-                <tr>
-                  <td className="p-4 text-slate-700">Acesso Vitalício</td>
-                  <td className="p-4 text-center text-slate-500">1 Ano</td>
-                  <td className="p-4 text-center text-gold-600 font-bold bg-amber-50">PARA SEMPRE</td>
-                </tr>
+              <tbody className="divide-y divide-emerald-50 text-sm">
+                {[
+                    ["Foco em Vendas e Lucro Real", false, true],
+                    ["Certificado Profissional Incluso", false, true],
+                    ["Contratos e Orçamentos Prontos", false, true],
+                    ["Acesso Vitalício (Para Sempre)", false, true]
+                ].map(([text, bad, good], idx) => (
+                    <tr key={idx} className="hover:bg-emerald-50/50 transition-colors">
+                        <td className="p-5 text-emerald-900 font-medium text-base">{(text as string)}</td>
+                        <td className="p-5 text-center text-red-400"><X className="w-5 h-5 mx-auto opacity-50" /></td>
+                        <td className="p-5 text-center bg-gold-50/30 border-x border-gold-100">
+                            <CheckCircle className="w-6 h-6 mx-auto text-green-600 fill-green-100" />
+                        </td>
+                    </tr>
+                ))}
               </tbody>
             </table>
           </div>
         </div>
 
-        {/* Pricing Card */}
-        <div className="max-w-md mx-auto relative mb-16">
-          {/* Urgency Badge */}
-          <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-6 py-1.5 rounded-full text-sm font-bold shadow-lg z-10 whitespace-nowrap animate-pulse border-2 border-white">
-            ⚠️ RESTAM APENAS {spotsLeft} VAGAS
+        {/* Card de Preço - Estilo Black Card Luxuoso */}
+        <div className="max-w-md mx-auto relative mb-16 transform transition-all hover:scale-[1.01] duration-500">
+          
+          {/* Faixa de Urgência */}
+          <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-red-600 to-red-500 text-white px-8 py-2 rounded-full text-sm font-bold shadow-xl z-20 whitespace-nowrap animate-pulse border-2 border-white flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-yellow-300" />
+            RESTAM APENAS {spotsLeft} VAGAS
           </div>
 
-          <div className="bg-white rounded-3xl shadow-2xl border-2 border-gold-500 overflow-hidden relative">
-            <div className="bg-emerald-950 p-6 text-center text-white pt-10">
-              <h3 className="text-2xl font-bold text-gold-400">Acesso Completo + Bônus</h3>
-              <p className="text-emerald-200 text-xs mt-1 font-medium bg-emerald-900/50 inline-block px-3 py-1 rounded-full border border-emerald-700">
-                Oferta válida até {formattedDate}
-              </p>
+          <div className="bg-emerald-950 rounded-[2rem] shadow-[0_20px_50px_-12px_rgba(6,78,59,0.5)] border border-emerald-800 overflow-hidden relative text-white">
+            
+            {/* Texture Overlay */}
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
+            
+            {/* Header do Card */}
+            <div className="relative z-10 p-8 pb-0 text-center">
+              <div className="inline-block bg-gold-500/20 border border-gold-500/50 text-gold-400 px-4 py-1 rounded-lg text-xs font-bold uppercase tracking-widest mb-4">
+                 Oferta Premium
+              </div>
+              <h3 className="text-3xl font-serif font-bold text-white mb-2">Acesso Vitalício</h3>
+              <p className="text-emerald-400/80 text-sm">Tudo o que você precisa para enriquecer com festas.</p>
             </div>
             
-            <div className="p-8">
-               <div className="space-y-3 mb-8">
-                  <div className="flex justify-between text-slate-500 text-sm line-through decoration-red-400">
-                     <span>Curso Balões Lucrativos</span>
-                     <span>R$618,00</span>
-                  </div>
-                  <div className="flex justify-between text-slate-500 text-sm line-through decoration-red-400">
-                     <span>Bônus: Caixa Floral</span>
-                     <span>R$177,00</span>
-                  </div>
-                  <div className="flex justify-between text-slate-500 text-sm line-through decoration-red-400">
-                     <span>Bônus: Embalagens</span>
-                     <span>R$147,00</span>
-                  </div>
-                  <div className="flex justify-between text-slate-500 text-sm line-through decoration-red-400">
-                     <span>Bônus: Arranjos</span>
-                     <span>R$167,00</span>
-                  </div>
-                  <div className="h-px bg-slate-200 my-2"></div>
-                  <div className="flex justify-between font-bold text-slate-700">
-                     <span>Valor Total</span>
-                     <span>R$1.109,00</span>
+            <div className="p-8 relative z-10">
+               {/* Lista de Valor */}
+               <div className="bg-emerald-900/50 rounded-xl p-6 mb-8 border border-emerald-800 backdrop-blur-sm">
+                  <div className="space-y-3">
+                     <div className="flex justify-between text-emerald-200/60 text-sm line-through decoration-red-500/50">
+                        <span>Curso Completo</span>
+                        <span>R$ 618,00</span>
+                     </div>
+                     <div className="flex justify-between text-emerald-200/60 text-sm line-through decoration-red-500/50">
+                        <span>Pack de Bônus VIP</span>
+                        <span>R$ 491,00</span>
+                     </div>
+                     <div className="w-full h-px bg-emerald-800 my-2"></div>
+                     <div className="flex justify-between font-bold text-emerald-100 text-lg">
+                        <span>Valor Real</span>
+                        <span>R$ 1.109,00</span>
+                     </div>
                   </div>
                </div>
 
+               {/* Preço */}
                <div className="text-center mb-8">
-                  <p className="bg-green-100 text-green-800 text-xs font-bold inline-block px-3 py-1 rounded-full mb-2">
-                    HOJE: DESCONTO DE R$1.012,00
+                  <p className="text-gold-400 text-sm font-bold mb-2 uppercase tracking-wide">
+                    Preço Exclusivo Hoje
                   </p>
-                  <p className="text-slate-500 text-sm">Por apenas 12x de</p>
-                  <div className="text-6xl font-bold text-emerald-900 tracking-tighter">
-                     <span className="text-2xl align-top relative top-2 text-slate-600">R$</span>
-                     10,03
+                  <div className="text-7xl font-black text-white tracking-tighter leading-none flex justify-center items-start gap-1">
+                     <span className="text-2xl mt-2 text-emerald-400 font-serif">R$</span>
+                     97
+                     <span className="text-xl mt-2 text-emerald-400 font-bold">,00</span>
                   </div>
-                  <p className="text-slate-500 text-sm mt-2">ou R$97,00 à vista</p>
-                  <p className="text-xs text-slate-400 mt-1">(Menos que um salgado na padaria)</p>
+                  <p className="text-emerald-300/80 text-sm mt-3 font-medium">
+                     ou 12x de <strong className="text-white">R$ 10,03</strong>
+                  </p>
                </div>
 
+               {/* Botão de Ação */}
                <button 
                 onClick={handleCheckout}
-                className="w-full bg-gradient-to-b from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-white font-bold py-4 px-4 rounded-xl shadow-[0_4px_14px_0_rgba(217,119,6,0.4)] transition-transform transform active:scale-95 flex items-center justify-center gap-2 text-lg mb-4 leading-tight animate-shine-effect"
+                className="w-full group bg-gradient-to-r from-gold-500 to-gold-600 hover:from-white hover:to-white text-emerald-950 hover:text-emerald-900 font-black py-5 px-6 rounded-xl shadow-[0_0_20px_rgba(251,191,36,0.3)] transition-all duration-300 transform active:scale-95 flex items-center justify-center gap-3 text-lg mb-6 leading-tight border border-gold-400"
                >
-                 <Lock className="w-5 h-5 flex-shrink-0" />
-                 <span>SIM! QUERO MINHA INDEPENDÊNCIA</span>
+                 <CreditCard className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                 <span>QUERO FATURAR AGORA</span>
                </button>
 
-               <div className="flex justify-center gap-2 opacity-75 grayscale hover:grayscale-0 transition-all">
-                 <img src="https://img.icons8.com/color/48/visa.png" alt="Visa" className="h-8"/>
-                 <img src="https://img.icons8.com/color/48/mastercard.png" alt="Mastercard" className="h-8"/>
-                 <img src="https://img.icons8.com/color/48/pix.png" alt="Pix" className="h-8"/>
+               <div className="flex justify-center items-center gap-2 opacity-60 text-[10px] text-emerald-200 uppercase tracking-wider font-medium">
+                  <Lock className="w-3 h-3" />
+                  Pagamento 100% Seguro
                </div>
             </div>
           </div>
         </div>
 
-        {/* Guarantee */}
-        <div className="max-w-2xl mx-auto mb-20 bg-white p-6 rounded-xl shadow-sm border border-emerald-100 flex flex-col md:flex-row items-center gap-6">
-          <ShieldCheck className="w-20 h-20 text-emerald-600 flex-shrink-0" />
-          <div className="text-center md:text-left">
-             <h4 className="font-bold text-xl text-emerald-950 mb-2">Garantia Blindada de 7 Dias</h4>
-             <p className="text-slate-600 text-sm">
-               Entre, assista as aulas e teste o método. Se você não amar, eu devolvo 100% do seu dinheiro. Sem perguntas, sem burocracia. O risco é todo meu.
+        {/* Garantia */}
+        <div className="max-w-2xl mx-auto mb-20 bg-white p-8 rounded-2xl shadow-sm border border-emerald-100 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
+          <div className="bg-emerald-100 p-4 rounded-full flex-shrink-0">
+             <ShieldCheck className="w-12 h-12 text-emerald-600" />
+          </div>
+          <div>
+             <h4 className="font-bold text-xl text-emerald-950 mb-2 font-serif">Seu Risco é ZERO (Garantia de 7 Dias)</h4>
+             <p className="text-slate-600 text-sm leading-relaxed">
+               Você tem 7 dias para testar. Se não começar a ver o potencial de lucro ou simplesmente não gostar da minha voz, eu devolvo cada centavo. <strong className="text-emerald-700">O risco financeiro é todo meu.</strong>
              </p>
           </div>
-        </div>
-
-        {/* The Two Options (Crossroads) */}
-        <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold text-emerald-950 mb-10 font-serif">Pronta Para Mudar Sua Vida?</h2>
-            <div className="grid md:grid-cols-2 gap-6">
-                
-                {/* Option 1 */}
-                <div className="bg-slate-100 p-8 rounded-2xl border border-slate-200">
-                    <div className="bg-slate-300 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <X className="w-6 h-6 text-slate-500" />
-                    </div>
-                    <h3 className="text-xl font-bold text-slate-700 mb-2">Opção 1: Não Fazer Nada</h3>
-                    <p className="text-slate-600 text-sm mb-4">
-                        Fecha esta página e continua exatamente onde está.
-                    </p>
-                    <div className="text-xs font-bold text-slate-500 bg-slate-200 py-2 px-4 rounded-lg inline-block">
-                        Resultado: Daqui 6 meses você vai estar no mesmo lugar (ou pior).
-                    </div>
-                </div>
-
-                {/* Option 2 */}
-                <div className="bg-white p-8 rounded-2xl border-2 border-gold-500 shadow-xl relative transform md:-translate-y-2">
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gold-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                        ESCOLHA INTELIGENTE
-                    </div>
-                    <div className="bg-emerald-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <CheckCircle className="w-6 h-6 text-emerald-600" />
-                    </div>
-                    <h3 className="text-xl font-bold text-emerald-950 mb-2">Opção 2: Entrar Agora</h3>
-                    <p className="text-slate-600 text-sm mb-4">
-                        Investe menos do que um fim de semana de lazer e muda sua vida.
-                    </p>
-                    <div className="text-sm font-bold text-emerald-800 bg-emerald-100 py-2 px-4 rounded-lg inline-block">
-                        Resultado: Daqui 6 meses você está faturando R$5k-15k/mês.
-                    </div>
-                </div>
-            </div>
-            
-            <button 
-                onClick={onCtaClick}
-                className="mt-10 bg-gradient-to-b from-emerald-800 to-emerald-900 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold py-4 px-12 rounded-xl shadow-lg transition-transform transform active:scale-95"
-            >
-                QUERO A OPÇÃO 2 AGORA 🚀
-            </button>
         </div>
 
       </div>

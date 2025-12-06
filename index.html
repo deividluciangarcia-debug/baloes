@@ -3,37 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Balões Lucrativos - Lucre com Festas</title>
+    <title>Balões Lucrativos - Sua Nova Fonte de Renda</title>
     
-    <!-- OTIMIZAÇÃO DE PERFORMANCE (PRE-CONNECT) -->
+    <!-- OTIMIZAÇÃO DE PERFORMANCE -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.tailwindcss.com">
-    <link rel="dns-prefetch" href="https://images.tcdn.com.br">
-    <link rel="dns-prefetch" href="https://i.imgur.com">
-    <link rel="dns-prefetch" href="https://www.transparenttextures.com">
     
-    <!-- 1. FACEBOOK PIXEL (Substitua 'SEU-ID-AQUI') -->
-    <!--
-    <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', 'SEU-ID-AQUI');
-    fbq('track', 'PageView');
-    </script>
-    <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=SEU-ID-AQUI&ev=PageView&noscript=1"
-    /></noscript>
-    -->
-
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Playfair+Display:wght@700&family=Great+Vibes&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,700&family=Great+Vibes&display=swap" rel="stylesheet">
+    
     <script>
       tailwind.config = {
         theme: {
@@ -44,19 +23,41 @@
               signature: ['Great Vibes', 'cursive'],
             },
             colors: {
+              // Tons de Dinheiro e Prosperidade
               emerald: {
-                850: '#064e3b',
-                950: '#022c22',
+                50: '#ecfdf5',
+                100: '#d1fae5',
+                200: '#a7f3d0',
+                300: '#6ee7b7',
+                400: '#34d399',
+                500: '#10b981',
+                600: '#059669', // Money Green Standard
+                700: '#047857',
+                800: '#065f46',
+                900: '#064e3b', // Deep Wealth
+                950: '#022c22', // Almost Black Green
               },
               gold: {
+                100: '#fef3c7',
+                200: '#fde68a',
+                300: '#fcd34d',
                 400: '#fbbf24',
-                500: '#f59e0b',
+                500: '#f59e0b', // Primary Gold
                 600: '#d97706',
+                700: '#b45309',
+                800: '#92400e',
               }
             },
             animation: {
               'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'float': 'float 6s ease-in-out infinite',
             },
+            keyframes: {
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-10px)' },
+              }
+            }
           },
         },
       }
@@ -64,17 +65,6 @@
     <style>
       html { scroll-behavior: smooth; }
       
-      /* Animation for the number change */
-      @keyframes pulse-scale {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.5); color: #ef4444; /* red-500 */ }
-      }
-      
-      .animate-number-change {
-        animation: pulse-scale 0.6s ease-in-out 3; /* Runs 3 times */
-      }
-
-      /* Shine Effect Layer for buttons */
       .animate-shine-effect {
         position: relative;
         overflow: hidden;
@@ -86,7 +76,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(to right, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+        background: linear-gradient(to right, transparent 0%, rgba(255,215,0,0.4) 50%, transparent 100%);
         transform: skewX(-20deg);
         animation: shine 3s infinite;
       }
@@ -95,18 +85,19 @@
         20% { left: 100%; }
         100% { left: 100%; }
       }
-
-      /* Custom Bounce for Cards (Smoother for large elements) */
-      @keyframes bounce-custom {
-        0%, 100% {
-          transform: translateY(0);
-        }
-        50% {
-          transform: translateY(-6px); /* Reduced height for elegance */
-        }
+      
+      /* Gradiente Luxuoso para Textos */
+      .text-gradient-gold {
+        background: linear-gradient(to right, #fcd34d, #f59e0b, #d97706, #f59e0b);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-size: 200% auto;
+        animation: shine-text 3s linear infinite;
       }
-      .animate-bounce-custom {
-        animation: bounce-custom 2s ease-in-out infinite; /* Slower and smoother */
+      @keyframes shine-text {
+        to {
+          background-position: 200% center;
+        }
       }
     </style>
   <script type="importmap">
@@ -123,7 +114,7 @@
 }
 </script>
 </head>
-  <body class="bg-slate-50 text-slate-900 antialiased">
+  <body class="bg-emerald-50 text-slate-900 antialiased selection:bg-emerald-200 selection:text-emerald-900">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

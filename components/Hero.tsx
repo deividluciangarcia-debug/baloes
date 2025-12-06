@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle, PlayCircle } from 'lucide-react';
+import { CheckCircle, PlayCircle, DollarSign, TrendingUp, CalendarDays } from 'lucide-react';
 
 interface HeroProps {
   onCtaClick: () => void;
@@ -8,75 +8,68 @@ interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = ({ onCtaClick, onLearnMoreClick, spotsLeft }) => {
-  // Percent logic removed as it's no longer used in this component visually
-  
   return (
-    <section className="relative bg-gradient-to-br from-emerald-950 via-emerald-900 to-green-900 text-white pt-12 pb-20 md:pt-24 md:pb-32 overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+    <section className="relative bg-emerald-950 text-white pt-12 pb-24 md:pt-24 md:pb-36 overflow-hidden">
+      {/* Background Wealth Effects */}
+      <div className="absolute top-0 left-0 w-full h-full opacity-5 bg-[url('https://www.transparenttextures.com/patterns/diamond-upholstery.png')]"></div>
+      <div className="absolute -top-20 -right-20 w-96 h-96 bg-emerald-600 rounded-full blur-[100px] opacity-30 animate-pulse-slow"></div>
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gold-600 rounded-full blur-[120px] opacity-10"></div>
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-5xl mx-auto text-center flex flex-col items-center">
           
-          {/* NOVA LEAD - Box Branco Grande com Efeito Saltitante (Bounce) */}
-          <div className="bg-white rounded-2xl p-1 md:p-2 mb-10 shadow-[0_0_50px_-12px_rgba(255,255,255,0.25)] animate-bounce-custom">
-            <div className="bg-white border-2 border-dashed border-emerald-100 rounded-xl px-6 py-4 md:px-10 md:py-6 flex flex-col md:flex-row items-center gap-3 md:gap-5">
-                <span className="relative flex h-5 w-5 flex-shrink-0">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-5 w-5 bg-red-600"></span>
-                </span>
-                
-                <div className="text-center md:text-left">
-                    <p className="text-emerald-950 text-xl md:text-3xl font-black uppercase tracking-tight leading-none">
-                        Escala Invertida:
-                    </p>
-                    <p className="text-emerald-600 text-base md:text-xl font-bold leading-tight mt-1">
-                        Trabalhe 2 dias e <span className="underline decoration-gold-500 decoration-4 underline-offset-2">descanse 5!</span>
-                    </p>
-                </div>
-            </div>
+          {/* Badge de Lucratividade */}
+          <div className="inline-flex items-center gap-2 bg-emerald-900/80 border border-emerald-700/50 rounded-full px-4 py-1.5 mb-8 animate-bounce-custom backdrop-blur-sm shadow-xl">
+             <div className="bg-green-500 rounded-full p-1">
+                <TrendingUp className="w-3 h-3 text-white" />
+             </div>
+             <span className="text-emerald-100 text-xs md:text-sm font-bold tracking-wide uppercase">
+                Método Validado: <span className="text-gold-400">Lucro de até 500%</span>
+             </span>
           </div>
           
-          <h1 className="text-4xl md:text-7xl font-bold font-serif mb-6 leading-tight drop-shadow-lg">
-            Fature até R$5.000 em <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-400 via-yellow-200 to-gold-400">
-              Um Único Final de Semana
+          <h1 className="text-4xl md:text-7xl font-bold font-serif mb-6 leading-[1.1] drop-shadow-2xl">
+            Transforme Ar em <br/>
+            <span className="text-gradient-gold italic">
+              Dinheiro Real na Sua Conta
             </span>
           </h1>
           
-          <p className="text-lg md:text-2xl text-emerald-100 mb-10 max-w-3xl mx-auto leading-relaxed font-light">
-            O método definitivo para transformar balões de látex em <strong>máquinas de imprimir dinheiro</strong>. 
-            Sem chefe, sem horário fixo e com margem de lucro de até 500%.
+          <p className="text-lg md:text-2xl text-emerald-100/90 mb-10 max-w-3xl mx-auto leading-relaxed font-light">
+            O único mercado onde você fatura <strong className="text-white border-b-2 border-gold-500">até R$5.000 por fim de semana</strong>, trabalhando apenas 2 dias e folgando 5.
           </p>
 
-          <div className="flex flex-col md:flex-row gap-5 justify-center items-center w-full">
+          <div className="flex flex-col md:flex-row gap-5 justify-center items-center w-full md:w-auto">
             <button 
               onClick={onCtaClick}
-              className="w-full md:w-auto bg-gradient-to-b from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-white font-bold text-xl md:text-2xl py-5 px-12 rounded-2xl shadow-[0_4px_14px_0_rgba(217,119,6,0.6)] transform hover:-translate-y-1 transition-all duration-200 animate-shine-effect border-t border-white/20"
+              className="w-full md:w-auto bg-gradient-to-b from-gold-500 via-gold-400 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-emerald-950 font-black text-xl md:text-2xl py-5 px-12 rounded-2xl shadow-[0_0_30px_-5px_rgba(251,191,36,0.5)] transform hover:-translate-y-1 transition-all duration-200 animate-shine-effect border border-gold-300 flex items-center justify-center gap-3"
             >
-              SIM! QUERO LUCRAR COM FESTAS
+              <DollarSign className="w-6 h-6 md:w-8 md:h-8" />
+              QUERO ATIVAR MINHA RENDA
             </button>
             <button 
               onClick={onLearnMoreClick}
-              className="group flex items-center gap-2 text-emerald-200 hover:text-white transition-colors font-medium px-6 py-3 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10"
+              className="group flex items-center gap-2 text-emerald-200 hover:text-white transition-colors font-medium px-6 py-3 rounded-xl hover:bg-emerald-900/50 border border-transparent hover:border-emerald-700/50"
             >
-              <PlayCircle className="w-6 h-6 text-gold-400 group-hover:scale-110 transition-transform" />
-              Ver a grade completa
+              <PlayCircle className="w-6 h-6 text-emerald-400 group-hover:scale-110 transition-transform" />
+              Ver como funciona
             </button>
           </div>
 
-          <div className="mt-16 flex flex-wrap justify-center gap-8 text-emerald-200/80 text-sm md:text-base font-medium">
-             <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-emerald-500" />
-                <span>Método à prova de falhas</span>
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-12 w-full max-w-4xl border-t border-emerald-800/50 pt-8">
+             <div className="flex flex-col items-center">
+                <span className="text-3xl font-bold text-white mb-1">R$150,00</span>
+                <span className="text-emerald-400 text-sm uppercase tracking-wider">Investimento Baixo</span>
              </div>
-             <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-emerald-500" />
-                <span>Comece com apenas R$200</span>
+             <div className="flex flex-col items-center border-y md:border-y-0 md:border-x border-emerald-800/50 py-4 md:py-0">
+                <span className="text-3xl font-bold text-white mb-1 flex items-center gap-2">
+                   2x5 <CalendarDays className="w-6 h-6 text-gold-500" />
+                </span>
+                <span className="text-emerald-400 text-sm uppercase tracking-wider">Trabalhe 2, Folgue 5</span>
              </div>
-             <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-emerald-500" />
-                <span>Risco Zero (Garantia Total)</span>
+             <div className="flex flex-col items-center">
+                <span className="text-3xl font-bold text-white mb-1">Até R$5k</span>
+                <span className="text-emerald-400 text-sm uppercase tracking-wider">Faturamento Mensal</span>
              </div>
           </div>
         </div>

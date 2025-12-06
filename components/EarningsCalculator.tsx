@@ -35,7 +35,7 @@ const EarningsCalculator: React.FC<EarningsCalculatorProps> = ({ spotsLeft }) =>
                  É Mais Fácil Chegar nos <span className="text-gold-400">R$5.000</span> Do Que Você Imagina
               </h2>
               <p className="text-emerald-200 text-lg leading-relaxed mb-8">
-                 Você não precisa de centenas de clientes. Com um trabalho consistente nos finais de semana e vendendo presentes durante a semana, a conta fecha fácil.
+                 Você não precisa se matar na escala 6x1. Com um trabalho consistente nos finais de semana e vendendo presentes durante a semana, a conta fecha fácil.
               </p>
 
               {/* BARRA DE PROGRESSO OTIMIZADA VISUALMENTE */}
@@ -131,7 +131,7 @@ const EarningsCalculator: React.FC<EarningsCalculatorProps> = ({ spotsLeft }) =>
                           </span>
                        </div>
                        <div className="bg-yellow-100 text-yellow-800 text-xs font-bold text-center mt-4 py-2 rounded border border-yellow-200">
-                          *Valores baseados na média de alunas iniciantes.
+                          *Valores estimados. Os resultados podem variar.
                        </div>
                     </div>
                  </div>
