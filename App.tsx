@@ -46,6 +46,7 @@ export default function App() {
   const [downsellStep, setDownsellStep] = useState<'offer1' | 'offer2'>('offer1');
 
   const stateRef = useRef({ showDownsellPage, downsellStep });
+  const historyPushedRef = useRef(false);
 
   const hideStickyBars = sectionsHidingBars.size > 0;
 
@@ -53,40 +54,42 @@ export default function App() {
     stateRef.current = { showDownsellPage, downsellStep };
   }, [showDownsellPage, downsellStep]);
 
-  // Lógica Avançada de Back Redirect (Mobile + Desktop)
+  // Lógica SUPER ROBUSTA de Back Redirect (Mobile + Desktop)
   useEffect(() => {
-    let historyPushed = false;
-
-    // Função para empurrar o estado no histórico
-    const pushHistoryState = () => {
-      if (!historyPushed) {
-        window.history.pushState(null, '', window.location.href);
-        historyPushed = true;
+    // Função para configurar o histórico (armadilha)
+    const setupHistoryTrap = () => {
+      if (!historyPushedRef.current) {
+        // Empurra o estado. Isso cria uma nova entrada no histórico.
+        // Se o usuário clicar em voltar, o navegador dispara 'popstate' em vez de sair.
+        window.history.pushState({ trapped: true }, '', window.location.href);
+        historyPushedRef.current = true;
       }
     };
 
-    // Tenta imediatamente ao carregar
-    pushHistoryState();
+    // 1. Tenta configurar imediatamente (funciona em alguns desktops)
+    setupHistoryTrap();
 
-    // Tenta novamente na primeira interação (scroll, toque ou clique)
-    // Isso garante que funcione em navegadores mobile que bloqueiam manipulação de histórico sem interação
+    // 2. Configura listeners para garantir captura em QUALQUER interação
     const handleInteraction = () => {
-      pushHistoryState();
-      // Remove os listeners após a primeira interação para não pesar
-      window.removeEventListener('scroll', handleInteraction);
-      window.removeEventListener('touchstart', handleInteraction);
-      window.removeEventListener('click', handleInteraction);
+      setupHistoryTrap();
     };
 
-    window.addEventListener('scroll', handleInteraction);
-    window.addEventListener('touchstart', handleInteraction);
+    // Lista abrangente de eventos para mobile e desktop
+    // 'touchmove' é crucial para detectar rolagem em mobile antes do evento 'scroll' disparar
+    window.addEventListener('mouseover', handleInteraction);
     window.addEventListener('click', handleInteraction);
+    window.addEventListener('touchstart', handleInteraction);
+    window.addEventListener('touchmove', handleInteraction);
+    window.addEventListener('scroll', handleInteraction);
 
     const handlePopState = (event: PopStateEvent) => {
+      // Impede o comportamento padrão (embora em popstate isso seja limitado)
       event.preventDefault();
-      // Empurra novamente para "prender" o usuário na frente
-      window.history.pushState(null, '', window.location.href);
       
+      // Imediatamente empurra o estado DE NOVO para manter o usuário preso
+      // se ele tentar clicar em voltar novamente na tela de downsell
+      window.history.pushState({ trapped: true }, '', window.location.href);
+
       const { showDownsellPage: isShowing, downsellStep: currentStep } = stateRef.current;
 
       if (!isShowing) {
@@ -98,11 +101,14 @@ export default function App() {
     };
 
     window.addEventListener('popstate', handlePopState);
+
     return () => {
-      window.removeEventListener('popstate', handlePopState);
-      window.removeEventListener('scroll', handleInteraction);
-      window.removeEventListener('touchstart', handleInteraction);
+      window.removeEventListener('mouseover', handleInteraction);
       window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
+      window.removeEventListener('touchmove', handleInteraction);
+      window.removeEventListener('scroll', handleInteraction);
+      window.removeEventListener('popstate', handlePopState);
     };
   }, []);
 
@@ -150,7 +156,7 @@ export default function App() {
     return () => document.removeEventListener('mouseleave', handleExitIntent);
   }, [hasShownExitIntent, spotsLeft, showDownsellPage, ultimatumType]);
 
-  // Observer ROBUSTO para monitorar Preços E Galeria
+  // Observer para monitorar Preços E Galeria de Produtos
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -169,21 +175,17 @@ export default function App() {
       { threshold: 0.1 } 
     );
 
-    // Monitora a seção de preços e a galeria de produtos
-    // Usa polling para garantir que elementos Lazy Loaded sejam encontrados
+    // Polling para garantir que encontramos os elementos mesmo com Lazy Loading
     const checkForElements = setInterval(() => {
       const pricingSection = document.getElementById('pricing');
       const gallerySection = document.getElementById('product-gallery');
       
-      let foundAll = true;
-      
+      // Observa se encontrar
       if (pricingSection) observer.observe(pricingSection);
-      else foundAll = false;
-
       if (gallerySection) observer.observe(gallerySection);
-      else foundAll = false;
 
-      if (foundAll) {
+      // Só para o intervalo se AMBOS forem encontrados
+      if (pricingSection && gallerySection) {
         clearInterval(checkForElements);
       }
     }, 500);
@@ -250,7 +252,7 @@ export default function App() {
          <SalesNotifications />
       </Suspense>
 
-      {/* BARRA FIXA DO TOPO - Oculta quando hideStickyBars é true */}
+      {/* BARRA FIXA DO TOPO - Oculta quando hideStickyBars é true (em Preços ou Galeria) */}
       <div 
         className={`
           ${getStickyBarColor()} text-white py-2 px-2 md:px-4 text-center text-[10px] md:text-sm font-semibold 
@@ -326,7 +328,7 @@ export default function App() {
         <Footer />
       </Suspense>
 
-      {/* BARRA FIXA DO RODAPÉ (MOBILE) - Oculta quando hideStickyBars é true */}
+      {/* BARRA FIXA DO RODAPÉ (MOBILE) - Oculta quando hideStickyBars é true (em Preços ou Galeria) */}
       <div 
         className={`fixed bottom-0 left-0 w-full bg-white border-t-2 border-gold-500 p-3 md:hidden z-40 shadow-[0_-4px_20px_rgba(0,0,0,0.2)] transition-transform duration-500 ease-in-out ${
           showMobileCta && !hideStickyBars ? 'translate-y-0' : 'translate-y-full'
