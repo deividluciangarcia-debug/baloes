@@ -108,22 +108,8 @@ const ProductGallery: React.FC = () => {
   const [itemsPerPage, setItemsPerPage] = useState(1);
   const [imagesLoaded, setImagesLoaded] = useState(false);
 
-  // Preload images to avoid flickering or slow loading
-  useEffect(() => {
-    const preloadImages = async () => {
-      const promises = products.map((product) => {
-        return new Promise((resolve, reject) => {
-          const img = new Image();
-          img.src = product.image;
-          img.onload = resolve;
-          img.onerror = resolve; // Continue even if one fails
-        });
-      });
-      await Promise.all(promises);
-      setImagesLoaded(true);
-    };
-    preloadImages();
-  }, []);
+  // Preload images logic removed because standard lazy loading is better for LCP/PSI score
+  // We rely on browser native loading="lazy"
 
   // Responsive items per page
   useEffect(() => {
@@ -219,6 +205,8 @@ const ProductGallery: React.FC = () => {
                       src={product.image} 
                       alt={product.name} 
                       className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                      loading="lazy"
+                      decoding="async"
                     />
                   </div>
                   

@@ -1,9 +1,49 @@
-import React from 'react';
-import { Play, Lock, Star } from 'lucide-react';
+import React, { useState } from 'react';
+import { Play, Lock, Star, Youtube } from 'lucide-react';
 
 interface FreePreviewProps {
   onCtaClick: () => void;
 }
+
+const VideoFacade = ({ videoId, title }: { videoId: string, title: string }) => {
+  const [showVideo, setShowVideo] = useState(false);
+
+  if (showVideo) {
+    return (
+      <div className="relative aspect-video rounded-lg overflow-hidden bg-black shadow-inner">
+        <iframe 
+          width="100%" 
+          height="100%" 
+          src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&controls=1`}
+          title={title}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowFullScreen
+          className="absolute inset-0 w-full h-full"
+        ></iframe>
+      </div>
+    );
+  }
+
+  return (
+    <div 
+      className="relative aspect-video rounded-lg overflow-hidden bg-slate-900 shadow-inner cursor-pointer group"
+      onClick={() => setShowVideo(true)}
+      aria-label={`Reproduzir vídeo: ${title}`}
+    >
+      <img 
+        src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`} 
+        alt={title}
+        className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+        loading="lazy"
+      />
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+          <Play className="w-8 h-8 text-white fill-white ml-1" />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const FreePreview: React.FC<FreePreviewProps> = ({ onCtaClick }) => {
   return (
@@ -34,18 +74,9 @@ const FreePreview: React.FC<FreePreviewProps> = ({ onCtaClick }) => {
               <span className="text-xs font-bold bg-emerald-100 text-emerald-800 px-2 py-1 rounded">AULA PRÁTICA</span>
               <span className="text-xs text-slate-400 font-medium">01:42</span>
             </div>
-            <div className="relative aspect-video rounded-lg overflow-hidden bg-black shadow-inner">
-              <iframe 
-                width="100%" 
-                height="100%" 
-                src="https://www.youtube.com/embed/xY2kwqcWFQ0?rel=0&modestbranding=1&controls=1" 
-                title="Aula Balões Bubbles" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowFullScreen
-                className="absolute inset-0 w-full h-full"
-                loading="lazy"
-              ></iframe>
-            </div>
+            
+            <VideoFacade videoId="xY2kwqcWFQ0" title="Aula Balões Bubbles" />
+
             <h3 className="font-bold text-emerald-950 mt-4 text-lg leading-tight">
               Balões Bubbles Personalizados
             </h3>
@@ -60,18 +91,9 @@ const FreePreview: React.FC<FreePreviewProps> = ({ onCtaClick }) => {
               <span className="text-xs font-bold bg-yellow-100 text-yellow-800 px-2 py-1 rounded">MÓDULO BÔNUS</span>
               <span className="text-xs text-slate-400 font-medium">03:33</span>
             </div>
-            <div className="relative aspect-video rounded-lg overflow-hidden bg-black shadow-inner">
-              <iframe 
-                width="100%" 
-                height="100%" 
-                src="https://www.youtube.com/embed/rUj_-HgbEDA?rel=0&modestbranding=1&controls=1" 
-                title="Aula Fidelização" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowFullScreen
-                className="absolute inset-0 w-full h-full"
-                loading="lazy"
-              ></iframe>
-            </div>
+            
+            <VideoFacade videoId="rUj_-HgbEDA" title="O Segredo da Fidelização" />
+
             <h3 className="font-bold text-emerald-950 mt-4 text-lg leading-tight">
               O Segredo da Fidelização
             </h3>

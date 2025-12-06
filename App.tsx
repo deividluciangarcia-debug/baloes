@@ -1,18 +1,20 @@
 import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import Hero from './components/Hero';
-import PainPoints from './components/PainPoints';
-import About from './components/About';
-import ProgramDetails from './components/ProgramDetails';
-import ProductGallery from './components/ProductGallery';
-import EarningsCalculator from './components/EarningsCalculator';
-import SocialProof from './components/SocialProof';
-import Pricing from './components/Pricing';
-import Footer from './components/Footer';
-import FAQ from './components/FAQ';
-import SalesNotifications from './components/SalesNotifications';
-import FreePreview from './components/FreePreview';
 import { Timer, Eye, Loader2, DollarSign } from 'lucide-react';
 
+// Eager load critical components
+// Lazy load below-the-fold components to improve Initial Load Time (LCP/FCP)
+const PainPoints = lazy(() => import('./components/PainPoints'));
+const About = lazy(() => import('./components/About'));
+const ProgramDetails = lazy(() => import('./components/ProgramDetails'));
+const ProductGallery = lazy(() => import('./components/ProductGallery'));
+const EarningsCalculator = lazy(() => import('./components/EarningsCalculator'));
+const SocialProof = lazy(() => import('./components/SocialProof'));
+const Pricing = lazy(() => import('./components/Pricing'));
+const Footer = lazy(() => import('./components/Footer'));
+const FAQ = lazy(() => import('./components/FAQ'));
+const SalesNotifications = lazy(() => import('./components/SalesNotifications'));
+const FreePreview = lazy(() => import('./components/FreePreview'));
 const UltimatumModal = lazy(() => import('./components/UltimatumModal'));
 const LastChance = lazy(() => import('./components/LastChance'));
 
@@ -22,6 +24,13 @@ const PageLoader = () => (
       <Loader2 className="w-12 h-12 text-gold-500 animate-spin" />
       <p className="text-emerald-100 font-serif tracking-widest text-sm">CARREGANDO OPORTUNIDADE...</p>
     </div>
+  </div>
+);
+
+// Fallback component for sections loading on scroll
+const SectionLoader = () => (
+  <div className="py-20 flex justify-center items-center bg-emerald-50/50">
+    <Loader2 className="w-8 h-8 text-emerald-600 animate-spin opacity-50" />
   </div>
 );
 
@@ -156,7 +165,9 @@ export default function App() {
         </Suspense>
       )}
 
-      <SalesNotifications />
+      <Suspense fallback={null}>
+         <SalesNotifications />
+      </Suspense>
 
       <div className={`${getStickyBarColor()} text-white py-2 px-2 md:px-4 text-center text-[10px] md:text-sm font-semibold sticky top-0 z-50 shadow-xl flex flex-col md:flex-row justify-center items-center md:gap-6 gap-1 border-b border-gold-500/30`}>
         <div className="flex items-center gap-2 drop-shadow-sm">
@@ -185,19 +196,46 @@ export default function App() {
         onLearnMoreClick={() => scrollToSection('program-details')}
         spotsLeft={spotsLeft} 
       />
-      <PainPoints />
-      <About />
-      <ProgramDetails />
       
-      <ProductGallery />
-      <EarningsCalculator spotsLeft={spotsLeft} />
+      <Suspense fallback={<SectionLoader />}>
+        <PainPoints />
+      </Suspense>
 
-      <FreePreview onCtaClick={() => scrollToSection('pricing')} />
-      <SocialProof />
-      <Pricing onCtaClick={() => scrollToSection('pricing')} spotsLeft={spotsLeft} />
-      <FAQ />
+      <Suspense fallback={<SectionLoader />}>
+        <About />
+      </Suspense>
+
+      <Suspense fallback={<SectionLoader />}>
+        <ProgramDetails />
+      </Suspense>
       
-      <Footer />
+      <Suspense fallback={<SectionLoader />}>
+        <ProductGallery />
+      </Suspense>
+
+      <Suspense fallback={<SectionLoader />}>
+        <EarningsCalculator spotsLeft={spotsLeft} />
+      </Suspense>
+
+      <Suspense fallback={<SectionLoader />}>
+        <FreePreview onCtaClick={() => scrollToSection('pricing')} />
+      </Suspense>
+
+      <Suspense fallback={<SectionLoader />}>
+        <SocialProof />
+      </Suspense>
+
+      <Suspense fallback={<SectionLoader />}>
+        <Pricing onCtaClick={() => scrollToSection('pricing')} spotsLeft={spotsLeft} />
+      </Suspense>
+
+      <Suspense fallback={<SectionLoader />}>
+        <FAQ />
+      </Suspense>
+      
+      <Suspense fallback={<div className="h-20 bg-emerald-950" />}>
+        <Footer />
+      </Suspense>
 
       <div 
         className={`fixed bottom-0 left-0 w-full bg-white border-t-2 border-gold-500 p-3 md:hidden z-40 shadow-[0_-4px_20px_rgba(0,0,0,0.2)] transition-transform duration-500 ease-in-out ${
