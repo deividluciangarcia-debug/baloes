@@ -1,15 +1,25 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Star, Play, Pause } from 'lucide-react';
+import { Star, Play, Pause, Loader2 } from 'lucide-react';
 
 // Componente Interno de Player de Voz (Estilo WhatsApp)
 const VoicePlayer: React.FC<{ audioUrl: string; duration?: string }> = ({ audioUrl, duration = "0:45" }) => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isReady, setIsReady] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const togglePlay = () => {
     if (!audioRef.current) return;
     
+    // Se ainda não carregou a fonte (primeiro clique)
+    if (!isReady) {
+        setIsLoading(true);
+        setIsReady(true); // Isso vai disparar o carregamento do src no elemento audio
+        // O useEffect vai lidar com o play assim que estiver pronto
+        return;
+    }
+
     if (isPlaying) {
       audioRef.current.pause();
     } else {
@@ -17,6 +27,20 @@ const VoicePlayer: React.FC<{ audioUrl: string; duration?: string }> = ({ audioU
     }
     setIsPlaying(!isPlaying);
   };
+
+  // Efeito para tocar automaticamente assim que o audio carregar após o primeiro clique
+  useEffect(() => {
+    if (isReady && audioRef.current && isLoading) {
+        const audio = audioRef.current;
+        const onCanPlay = () => {
+            setIsLoading(false);
+            audio.play();
+            setIsPlaying(true);
+        };
+        audio.addEventListener('canplay', onCanPlay);
+        return () => audio.removeEventListener('canplay', onCanPlay);
+    }
+  }, [isReady, isLoading]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -40,17 +64,25 @@ const VoicePlayer: React.FC<{ audioUrl: string; duration?: string }> = ({ audioU
       audio.removeEventListener('timeupdate', updateProgress);
       audio.removeEventListener('ended', handleEnded);
     };
-  }, []);
+  }, [isReady]); // Só anexa listeners se estiver pronto
 
   return (
     <div className="mt-4 bg-white rounded-xl p-3 flex items-center gap-3 border border-slate-300 shadow-md shadow-slate-200/50 w-full hover:border-green-400 transition-colors duration-300">
-      <audio ref={audioRef} src={audioUrl} preload="metadata" />
+      {/* O src só é definido se isReady for true. Isso evita o download inicial de 26MB. */}
+      <audio ref={audioRef} src={isReady ? audioUrl : undefined} preload="none" />
       
       <button 
         onClick={togglePlay}
         className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white shadow-md hover:bg-green-600 transition-colors flex-shrink-0"
+        aria-label={isPlaying ? "Pausar" : "Tocar depoimento"}
       >
-        {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current ml-0.5" />}
+        {isLoading ? (
+            <Loader2 className="w-4 h-4 animate-spin text-white" />
+        ) : isPlaying ? (
+            <Pause className="w-4 h-4 fill-current" />
+        ) : (
+            <Play className="w-4 h-4 fill-current ml-0.5" />
+        )}
       </button>
 
       <div className="flex-1 flex flex-col justify-center gap-1">
@@ -85,7 +117,7 @@ const SocialProof: React.FC = () => {
       image: "https://picsum.photos/100/100?random=20",
       quote: "Gente, minha primeira festa cobrando R$800! Gastei só R$150 de material. Tô chocada com o lucro!",
       highlight: "Lucrou R$650 na 1ª festa",
-      // Exemplo de áudio (Substitua por um link real)
+      // Exemplo de áudio
       audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", 
       audioDuration: "0:58"
     },
@@ -94,7 +126,7 @@ const SocialProof: React.FC = () => {
       image: "https://picsum.photos/100/100?random=21",
       quote: "Larguei meu emprego CLT semana passada. Agora ganho em um fds o que ganhava no mês todo aguentando patrão.",
       highlight: "Pediu demissão do CLT",
-      // Exemplo de áudio (Substitua por um link real)
+      // Exemplo de áudio
       audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", 
       audioDuration: "1:12"
     },
@@ -103,7 +135,7 @@ const SocialProof: React.FC = () => {
       image: "https://picsum.photos/100/100?random=22",
       quote: "O módulo de vendas salvou minha vida. Eu tinha vergonha de cobrar, agora fecho contrato todo dia.",
       highlight: "Agenda lotada",
-      // Exemplo de áudio (Substitua por um link real)
+      // Exemplo de áudio
       audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", 
       audioDuration: "0:47"
     }
@@ -121,7 +153,12 @@ const SocialProof: React.FC = () => {
           {testimonials.map((t, idx) => (
             <div key={idx} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full">
               <div className="flex items-center gap-4 mb-4">
-                <img src={t.image} alt={t.handle} className="w-12 h-12 rounded-full border-2 border-green-500" />
+                <img 
+                    src={t.image} 
+                    alt={t.handle} 
+                    className="w-12 h-12 rounded-full border-2 border-green-500" 
+                    loading="lazy"
+                />
                 <div>
                   <p className="font-bold text-emerald-900">{t.handle}</p>
                   <div className="flex text-yellow-400">
@@ -136,7 +173,7 @@ const SocialProof: React.FC = () => {
                 🚀 {t.highlight}
               </div>
 
-              {/* Player de Áudio Padrão */}
+              {/* Player de Áudio Otimizado */}
               {t.audio && (
                 <div className="w-full mt-auto">
                   <VoicePlayer audioUrl={t.audio} duration={t.audioDuration} />

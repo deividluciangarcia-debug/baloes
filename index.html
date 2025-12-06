@@ -12,8 +12,20 @@
     <link rel="preconnect" href="https://cdn.tailwindcss.com">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Adicionado display=swap para renderização mais rápida do texto -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,700&family=Great+Vibes&display=swap" rel="stylesheet">
+    
+    <!-- Fonte otimizada para não bloquear renderização (LCP) -->
+    <link 
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,700&family=Great+Vibes&display=swap" 
+      rel="stylesheet" 
+      media="print" 
+      onload="this.media='all'"
+    >
+    <noscript>
+      <link 
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,700&family=Great+Vibes&display=swap" 
+        rel="stylesheet"
+      >
+    </noscript>
     
     <script>
       tailwind.config = {
@@ -102,7 +114,7 @@
         }
       }
     </style>
-  <script type="importmap">
+<script type="importmap">
 {
   "imports": {
     "react": "https://aistudiocdn.com/react@^19.2.1",

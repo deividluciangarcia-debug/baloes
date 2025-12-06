@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle, PlayCircle, DollarSign, TrendingUp, CalendarDays } from 'lucide-react';
+import { PlayCircle, DollarSign, TrendingUp, CalendarDays } from 'lucide-react';
 
 interface HeroProps {
   onCtaClick: () => void;
@@ -10,8 +10,10 @@ interface HeroProps {
 const Hero: React.FC<HeroProps> = ({ onCtaClick, onLearnMoreClick, spotsLeft }) => {
   return (
     <section className="relative bg-emerald-950 text-white pt-12 pb-24 md:pt-24 md:pb-36 overflow-hidden">
-      {/* Background Wealth Effects */}
-      <div className="absolute top-0 left-0 w-full h-full opacity-5 bg-[url('https://www.transparenttextures.com/patterns/diamond-upholstery.png')]"></div>
+      {/* Otimização: Substituído imagem externa pesada por CSS puro */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-900/40 via-emerald-950 to-emerald-950 opacity-60"></div>
+      
+      {/* Background Wealth Effects - CSS Pure Shapes instead of heavy images */}
       <div className="absolute -top-20 -right-20 w-96 h-96 bg-emerald-600 rounded-full blur-[100px] opacity-30 animate-pulse-slow"></div>
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gold-600 rounded-full blur-[120px] opacity-10"></div>
       
