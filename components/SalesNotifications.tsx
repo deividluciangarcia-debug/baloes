@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Check } from 'lucide-react';
+import { BadgeCheck, User, MapPin } from 'lucide-react';
 
 const NAMES = [
   "Mariana S.", "Fernanda L.", "Juliana M.", "Patricia K.", 
@@ -18,47 +18,39 @@ const SalesNotifications: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [data, setData] = useState({ name: '', location: '', time: '' });
   
-  // Audio for the "pop" sound
   const playSound = () => {
     try {
       const audio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/24/audio_c8c8a73467.mp3?filename=pop-39222.mp3");
-      audio.volume = 0.4;
-      audio.play().catch(e => {
-        // Auto-play policies might block this if user hasn't interacted yet
-        // Silently fail is fine
-      });
+      audio.volume = 0.2; // Volume mais sutil
+      audio.play().catch(() => {});
     } catch (error) {
       console.error("Audio play failed", error);
     }
   };
 
   useEffect(() => {
-    // Slower interval: Between 25 seconds (25000ms) and 60 seconds (60000ms)
-    // Approximately 2.5x slower than previous settings
     const scheduleNext = () => {
-      const delay = Math.floor(Math.random() * (60000 - 25000 + 1) + 25000);
+      // Intervalo um pouco mais rápido para manter o dinamismo
+      const delay = Math.floor(Math.random() * (45000 - 15000 + 1) + 15000);
       
       const timeoutId = setTimeout(() => {
-        // Setup new data
         const randomName = NAMES[Math.floor(Math.random() * NAMES.length)];
         const randomLoc = LOCATIONS[Math.floor(Math.random() * LOCATIONS.length)];
-        const randomTime = Math.floor(Math.random() * 15) + 1; // 1 to 15 mins ago
+        const randomTime = Math.floor(Math.random() * 10) + 1; 
         
         setData({
           name: randomName,
           location: randomLoc,
-          time: randomTime < 2 ? 'agora' : `${randomTime} min atrás`
+          time: randomTime < 2 ? 'Agora mesmo' : `há ${randomTime} min`
         });
 
-        // Show
         setIsVisible(true);
         playSound();
 
-        // Hide after 6 seconds (slightly longer reading time)
         setTimeout(() => {
           setIsVisible(false);
-          scheduleNext(); // Schedule the next one after hiding
-        }, 6000);
+          scheduleNext();
+        }, 5000);
 
       }, delay);
 
@@ -72,32 +64,31 @@ const SalesNotifications: React.FC = () => {
 
   return (
     <div 
-      className={`fixed z-50 flex items-center gap-4 bg-white p-4 rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.2)] border-l-4 border-red-500 
-        w-[92%] max-w-sm md:w-auto
-        transition-all duration-[1500ms] ease-in-out transform
-        ${isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-4 scale-95 pointer-events-none'}
-        /* Position on Mobile: Top (spaced out), Desktop: Bottom Left */
-        top-20 left-1/2 -translate-x-1/2 md:translate-x-0 md:top-auto md:left-6 md:bottom-6
-        shadow-red-500/20
+      className={`fixed z-50 flex items-center gap-3 bg-slate-900/95 backdrop-blur-md p-3 pr-5 rounded-lg shadow-2xl border-l-4 border-blue-500 
+        w-[90%] max-w-[340px] md:w-auto ring-1 ring-white/10
+        transition-all duration-[800ms] cubic-bezier(0.34, 1.56, 0.64, 1) transform
+        ${isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-90 pointer-events-none'}
+        bottom-4 left-1/2 -translate-x-1/2 md:translate-x-0 md:bottom-6 md:left-6 md:top-auto
       `}
     >
-      <div className="bg-red-50 p-3 rounded-full flex-shrink-0 shadow-inner border border-red-100">
-        <Check className="w-6 h-6 text-red-600" />
+      {/* Ícone Lateral */}
+      <div className="bg-blue-600 p-2 rounded-full flex-shrink-0 shadow-lg shadow-blue-900/50">
+        <BadgeCheck className="w-5 h-5 text-white" />
       </div>
+
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-bold text-slate-800 leading-tight truncate">
+        <div className="flex justify-between items-start">
+            <p className="text-xs font-bold text-blue-200 uppercase tracking-wider mb-0.5">Nova Aluna</p>
+            <span className="text-[10px] text-slate-400 font-mono">{data.time}</span>
+        </div>
+        
+        <p className="text-sm font-bold text-white leading-tight truncate flex items-center gap-1">
           {data.name}
         </p>
-        <p className="text-xs text-slate-600 mb-1">
-          Acabou de comprar o <span className="font-bold text-red-600">Balões Lucrativos</span>
-        </p>
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wide">{data.location}</span>
-          <span className="text-[10px] text-slate-300">•</span>
-          <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
-             <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-             {data.time}
-          </span>
+        
+        <div className="flex items-center gap-1 mt-1">
+          <MapPin className="w-3 h-3 text-slate-500" />
+          <span className="text-[10px] text-slate-400 font-medium truncate">{data.location}</span>
         </div>
       </div>
     </div>
