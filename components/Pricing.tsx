@@ -85,16 +85,16 @@ const Pricing: React.FC<PricingProps> = ({ onCtaClick, spotsLeft }) => {
                   <div className="space-y-3">
                      <div className="flex justify-between text-emerald-200/60 text-sm line-through decoration-red-500/50">
                         <span>Curso Completo</span>
-                        <span>R$ 618,00</span>
+                        <span>R$618,00</span>
                      </div>
                      <div className="flex justify-between text-emerald-200/60 text-sm line-through decoration-red-500/50">
                         <span>Pack de Bônus VIP</span>
-                        <span>R$ 491,00</span>
+                        <span>R$491,00</span>
                      </div>
                      <div className="w-full h-px bg-emerald-800 my-2"></div>
                      <div className="flex justify-between font-bold text-emerald-100 text-lg">
                         <span>Valor Real</span>
-                        <span>R$ 1.109,00</span>
+                        <span>R$1.109,00</span>
                      </div>
                   </div>
                </div>
@@ -110,7 +110,7 @@ const Pricing: React.FC<PricingProps> = ({ onCtaClick, spotsLeft }) => {
                      <span className="text-xl mt-2 text-emerald-400 font-bold">,00</span>
                   </div>
                   <p className="text-emerald-300/80 text-sm mt-3 font-medium">
-                     ou 12x de <strong className="text-white">R$ 10,03</strong>
+                     ou 12x de <strong className="text-white">R$10,03</strong>
                   </p>
                </div>
 

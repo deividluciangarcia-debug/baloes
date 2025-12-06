@@ -32,7 +32,7 @@ const EarningsCalculator: React.FC<EarningsCalculatorProps> = ({ spotsLeft }) =>
                  <span className="text-emerald-200 font-bold text-sm uppercase tracking-wide">Simulador de Realidade</span>
               </div>
               <h2 className="text-3xl md:text-5xl font-bold font-serif mb-6 leading-tight">
-                 É Mais Fácil Chegar nos <span className="text-gold-400">R$5.000</span> Do Que Você Imagina
+                 É Mais Fácil Faturar até <span className="text-gold-400">R$5.000</span> Do Que Você Imagina
               </h2>
               <p className="text-emerald-200 text-lg leading-relaxed mb-8">
                  Você não precisa se matar na escala 6x1. Com um trabalho consistente nos finais de semana e vendendo presentes durante a semana, a conta fecha fácil.
