@@ -8,6 +8,19 @@ interface FreePreviewProps {
 const VideoFacade = ({ videoId, title }: { videoId: string, title: string }) => {
   const [showVideo, setShowVideo] = useState(false);
 
+  const handlePlayClick = () => {
+    // Rastreamento de Play de Vídeo
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('trackCustom', 'Play_Video_Aula', {
+        content_name: title,
+        content_id: videoId,
+        content_category: 'Free Preview'
+      });
+      console.log(`[Pixel] Vídeo Play: ${title}`);
+    }
+    setShowVideo(true);
+  };
+
   if (showVideo) {
     return (
       <div className="relative aspect-video rounded-lg overflow-hidden bg-black shadow-inner">
@@ -27,7 +40,7 @@ const VideoFacade = ({ videoId, title }: { videoId: string, title: string }) => 
   return (
     <div 
       className="relative aspect-video rounded-lg overflow-hidden bg-slate-900 shadow-inner cursor-pointer group"
-      onClick={() => setShowVideo(true)}
+      onClick={handlePlayClick}
       aria-label={`Reproduzir vídeo: ${title}`}
     >
       <img 
@@ -46,6 +59,16 @@ const VideoFacade = ({ videoId, title }: { videoId: string, title: string }) => 
 };
 
 const FreePreview: React.FC<FreePreviewProps> = ({ onCtaClick }) => {
+  const handleUnlockClick = () => {
+    // Rastreamento de Intenção de Desbloqueio (Forte sinal de compra)
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('trackCustom', 'Click_Unlock_Upsell', {
+        content_name: 'Desbloquear Metodo Completo'
+      });
+    }
+    onCtaClick();
+  };
+
   return (
     <section className="py-20 bg-emerald-50 relative overflow-hidden">
       {/* Background Decoration */}
@@ -104,7 +127,7 @@ const FreePreview: React.FC<FreePreviewProps> = ({ onCtaClick }) => {
 
           {/* Locked Content (Upsell Trigger) */}
           <div 
-            onClick={onCtaClick}
+            onClick={handleUnlockClick}
             className="relative bg-emerald-900 rounded-2xl shadow-xl overflow-hidden flex flex-col justify-center items-center text-center p-8 border border-emerald-800 group cursor-pointer hover:scale-[1.02] transition-transform"
           >
             {/* Background Pattern */}

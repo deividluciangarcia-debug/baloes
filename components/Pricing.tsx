@@ -12,7 +12,22 @@ const Pricing: React.FC<PricingProps> = ({ onCtaClick, spotsLeft }) => {
   const formattedDate = today.toLocaleDateString('pt-BR');
 
   const handleCheckout = () => {
-    window.location.href = "https://pay.kiwify.com.br/XpMRo1p";
+    // Rastreamento de Início de Checkout (O evento mais importante)
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('track', 'InitiateCheckout', {
+        content_name: 'Curso Baloes Lucrativos - Oferta Principal',
+        value: 97.00,
+        currency: 'BRL',
+        content_ids: ['baloes-lucrativos-main'],
+        content_type: 'product'
+      });
+      console.log('[Pixel] InitiateCheckout: R$97.00');
+    }
+
+    // Pequeno delay para garantir que o pixel dispare antes do redirect
+    setTimeout(() => {
+      window.location.href = "https://pay.kiwify.com.br/XpMRo1p";
+    }, 300);
   };
 
   return (

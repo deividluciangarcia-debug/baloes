@@ -8,6 +8,28 @@ interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = ({ onCtaClick, onLearnMoreClick, spotsLeft }) => {
+  
+  const handleCtaClick = () => {
+    // Rastreamento Específico
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('trackCustom', 'Click_Hero_CTA', {
+        content_name: 'Hero Section Main Button',
+        content_category: 'Lead Interest'
+      });
+    }
+    onCtaClick();
+  };
+
+  const handleLearnMoreClick = () => {
+    // Rastreamento Específico
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('trackCustom', 'Click_Hero_LearnMore', {
+        content_name: 'Hero Section Learn More'
+      });
+    }
+    onLearnMoreClick();
+  };
+
   return (
     <section className="relative bg-emerald-950 text-white pt-12 pb-24 md:pt-24 md:pb-36 overflow-hidden">
       {/* Otimização: Substituído imagem externa pesada por CSS puro */}
@@ -44,14 +66,14 @@ const Hero: React.FC<HeroProps> = ({ onCtaClick, onLearnMoreClick, spotsLeft }) 
 
           <div className="flex flex-col md:flex-row gap-5 justify-center items-center w-full md:w-auto">
             <button 
-              onClick={onCtaClick}
+              onClick={handleCtaClick}
               className="w-full md:w-auto bg-gradient-to-b from-gold-500 via-gold-400 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-emerald-950 font-black text-xl md:text-2xl py-5 px-12 rounded-2xl shadow-[0_0_30px_-5px_rgba(251,191,36,0.5)] transform hover:-translate-y-1 transition-all duration-200 animate-shine-effect border border-gold-300 flex items-center justify-center gap-3"
             >
               <DollarSign className="w-6 h-6 md:w-8 md:h-8" />
               QUERO ATIVAR MINHA RENDA
             </button>
             <button 
-              onClick={onLearnMoreClick}
+              onClick={handleLearnMoreClick}
               className="group flex items-center gap-2 text-emerald-200 hover:text-white transition-colors font-medium px-6 py-3 rounded-xl hover:bg-emerald-900/50 border border-transparent hover:border-emerald-700/50"
             >
               <PlayCircle className="w-6 h-6 text-emerald-400 group-hover:scale-110 transition-transform" />

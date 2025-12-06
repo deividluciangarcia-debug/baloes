@@ -43,18 +43,44 @@ const LastChance: React.FC<LastChanceProps> = ({ step, onNextStep }) => {
   const progressPercentage = (timeLeft / 180) * 100;
 
   const handleAcceptOffer1 = () => {
-    // Link KiwiFy R$ 72,75
-    window.location.href = "https://pay.kiwify.com.br/8DJPyTz"; 
+    // Rastreamento Downsell 1
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('track', 'InitiateCheckout', {
+        content_name: 'Downsell 01 - R$72.75',
+        value: 72.75,
+        currency: 'BRL',
+        content_ids: ['baloes-downsell-1'],
+        content_type: 'product'
+      });
+    }
+
+    setTimeout(() => {
+      window.location.href = "https://pay.kiwify.com.br/8DJPyTz"; 
+    }, 300);
   };
 
   const handleRejectOffer1 = () => {
-    // Chama função do pai para mudar o state e avançar para oferta 2
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('trackCustom', 'Reject_Downsell_1');
+    }
     onNextStep();
   };
 
   const handleAcceptOffer2 = () => {
-    // Link KiwiFy R$ 37,00
-    window.location.href = "https://pay.kiwify.com.br/Skd9Pnc"; 
+    // Rastreamento Downsell 2
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('track', 'InitiateCheckout', {
+        content_name: 'Downsell 02 (Final) - R$37.00',
+        value: 37.00,
+        currency: 'BRL',
+        content_ids: ['baloes-downsell-2'],
+        content_type: 'product'
+      });
+    }
+    
+    setTimeout(() => {
+       window.location.href = "https://pay.kiwify.com.br/Skd9Pnc"; 
+    }, 300);
   };
 
   return (

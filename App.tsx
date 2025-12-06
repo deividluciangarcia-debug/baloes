@@ -39,7 +39,6 @@ const SectionLoader = () => (
 export default function App() {
   const [spotsLeft, setSpotsLeft] = useState(27); 
   const [showMobileCta, setShowMobileCta] = useState(false);
-  // Estado para controlar quais seções devem ocultar as barras fixas
   const [sectionsHidingBars, setSectionsHidingBars] = useState<Set<string>>(new Set());
   const [ultimatumType, setUltimatumType] = useState<'exit' | 'scarcity' | null>(null);
   const [onlineUsers, setOnlineUsers] = useState(118);
@@ -57,7 +56,7 @@ export default function App() {
   }, [showDownsellPage, downsellStep]);
 
   // =========================================================================
-  // LÓGICA DE BACK REDIRECT (CORRIGIDA E REFORÇADA)
+  // LÓGICA DE BACK REDIRECT
   // =========================================================================
   useEffect(() => {
     const armHistoryTrap = () => {
@@ -108,17 +107,14 @@ export default function App() {
     };
   }, []);
 
-  // Lógica de Vagas (Acelerada devido aos vídeos curtos)
+  // Lógica de Vagas
   useEffect(() => {
     let delay;
     if (spotsLeft > 15) {
-      // Começo: mais rápido (entre 8s e 20s) para simular pico
       delay = Math.floor(Math.random() * (20000 - 8000 + 1) + 8000); 
     } else if (spotsLeft > 5) {
-      // Meio: desacelera um pouco (entre 30s e 60s)
       delay = Math.floor(Math.random() * (60000 - 30000 + 1) + 30000);
     } else {
-      // Fim: bem lento (2 minutos+)
       delay = 140000; 
     }
     
@@ -210,34 +206,31 @@ export default function App() {
     }
   };
 
-  // NOVA LÓGICA DE CORES: Azul (Início) -> Verde (Meio) -> Vermelho (Fim)
   const getStickyBarColor = () => {
-    if (spotsLeft > 20) return 'bg-indigo-900'; // Azul Atenção Inicial
-    if (spotsLeft > 9) return 'bg-emerald-800'; // Verde Padrão
-    return 'bg-red-700';                        // Vermelho Urgência
+    if (spotsLeft > 20) return 'bg-indigo-900';
+    if (spotsLeft > 9) return 'bg-emerald-800';
+    return 'bg-red-700';
   };
 
-  if (showDownsellPage) {
-    return (
-      <Suspense fallback={<PageLoader />}>
-        {/* Inclui rastreamento mesmo na página de downsell */}
-        <PixelEvents />
-        <LastChance 
-          step={downsellStep} 
-          onNextStep={() => {
-            setDownsellStep('offer2');
-            window.history.pushState({ trapped: true }, '', window.location.href);
-          }} 
-        />
-      </Suspense>
-    );
-  }
+  const handleMobileCtaClick = () => {
+    // Rastreamento Específico Mobile
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('trackCustom', 'Click_Mobile_Sticky', {
+        content_name: 'Mobile Floating Bar CTA'
+      });
+    }
+    scrollToSection('pricing');
+  };
 
+  // RENDERIZAÇÃO PRINCIPAL
+  // PixelEvents foi movido para fora das condicionais para garantir persistência do timer
   return (
-    <div className="min-h-screen flex flex-col font-sans relative bg-emerald-50 text-slate-900">
-      
-      {/* Componente de Rastreamento de Eventos (Invisível) */}
+    <>
       <PixelEvents />
+
+      <Suspense fallback={null}>
+         <SalesNotifications />
+      </Suspense>
 
       {ultimatumType && (
         <Suspense fallback={null}>
@@ -257,103 +250,114 @@ export default function App() {
         </Suspense>
       )}
 
-      <Suspense fallback={null}>
-         <SalesNotifications />
-      </Suspense>
+      {showDownsellPage ? (
+        <Suspense fallback={<PageLoader />}>
+          <LastChance 
+            step={downsellStep} 
+            onNextStep={() => {
+              setDownsellStep('offer2');
+              window.history.pushState({ trapped: true }, '', window.location.href);
+            }} 
+          />
+        </Suspense>
+      ) : (
+        <div className="min-h-screen flex flex-col font-sans relative bg-emerald-50 text-slate-900">
+          
+          <div 
+            className={`
+              ${getStickyBarColor()} text-white py-2 px-2 md:px-4 text-center text-[10px] md:text-sm font-semibold 
+              sticky top-0 z-50 shadow-xl flex flex-col md:flex-row justify-center items-center md:gap-6 gap-1 
+              border-b border-white/10 transition-transform duration-500
+              ${hideStickyBars ? '-translate-y-full' : 'translate-y-0'}
+            `}
+          >
+            <div className="flex items-center gap-2 drop-shadow-sm">
+                <Timer className="w-3 h-3 md:w-4 md:h-4 text-yellow-400" />
+                <span>
+                  <span className={spotsLeft <= 9 ? "text-red-400 font-black animate-pulse" : "text-yellow-400 font-bold"}>
+                    OPORTUNIDADE:
+                  </span> 
+                  <span> Apenas </span>
+                  <span key={spotsLeft} className="text-white font-black text-sm md:text-lg mx-1 inline-block animate-[pulse_0.5s_ease-in-out]">
+                    {spotsLeft}
+                  </span> 
+                  <span> vagas para a Turma de Lucro!</span>
+                </span>
+            </div>
+            
+            <div className="hidden md:block w-px h-4 bg-white/20"></div>
+            <div className="flex items-center gap-2 text-emerald-100/90">
+                <Eye className="w-3 h-3 md:w-4 md:h-4" />
+                <span>{onlineUsers} interessadas assistindo agora</span>
+            </div>
+          </div>
 
-      <div 
-        className={`
-          ${getStickyBarColor()} text-white py-2 px-2 md:px-4 text-center text-[10px] md:text-sm font-semibold 
-          sticky top-0 z-50 shadow-xl flex flex-col md:flex-row justify-center items-center md:gap-6 gap-1 
-          border-b border-white/10 transition-transform duration-500
-          ${hideStickyBars ? '-translate-y-full' : 'translate-y-0'}
-        `}
-      >
-        <div className="flex items-center gap-2 drop-shadow-sm">
-            <Timer className="w-3 h-3 md:w-4 md:h-4 text-yellow-400" />
-            <span>
-              <span className={spotsLeft <= 9 ? "text-red-400 font-black animate-pulse" : "text-yellow-400 font-bold"}>
-                OPORTUNIDADE:
-              </span> 
-              <span> Apenas </span>
-              <span key={spotsLeft} className="text-white font-black text-sm md:text-lg mx-1 inline-block animate-[pulse_0.5s_ease-in-out]">
-                {spotsLeft}
-              </span> 
-              <span> vagas para a Turma de Lucro!</span>
-            </span>
+          <Hero 
+            onCtaClick={() => scrollToSection('pricing')} 
+            onLearnMoreClick={() => scrollToSection('program-details')}
+            spotsLeft={spotsLeft} 
+          />
+          
+          <Suspense fallback={<SectionLoader />}>
+            <PainPoints />
+          </Suspense>
+
+          <Suspense fallback={<SectionLoader />}>
+            <About />
+          </Suspense>
+
+          <Suspense fallback={<SectionLoader />}>
+            <ProgramDetails />
+          </Suspense>
+          
+          <Suspense fallback={<SectionLoader />}>
+            <ProductGallery />
+          </Suspense>
+
+          <Suspense fallback={<SectionLoader />}>
+            <EarningsCalculator spotsLeft={spotsLeft} />
+          </Suspense>
+
+          <Suspense fallback={<SectionLoader />}>
+            <FreePreview onCtaClick={() => scrollToSection('pricing')} />
+          </Suspense>
+
+          <Suspense fallback={<SectionLoader />}>
+            <SocialProof />
+          </Suspense>
+
+          <Suspense fallback={<SectionLoader />}>
+            <Pricing onCtaClick={() => scrollToSection('pricing')} spotsLeft={spotsLeft} />
+          </Suspense>
+
+          <Suspense fallback={<SectionLoader />}>
+            <OptionsComparison onCtaClick={() => scrollToSection('pricing')} />
+          </Suspense>
+
+          <Suspense fallback={<SectionLoader />}>
+            <FAQ />
+          </Suspense>
+          
+          <Suspense fallback={<div className="h-20 bg-emerald-950" />}>
+            <Footer />
+          </Suspense>
+
+          {/* CTA Mobile */}
+          <div 
+            className={`fixed bottom-0 left-0 w-full bg-white border-t-2 border-gold-500 p-3 md:hidden z-40 shadow-[0_-4px_20px_rgba(0,0,0,0.2)] transition-transform duration-500 ease-in-out ${
+              showMobileCta && !hideStickyBars ? 'translate-y-0' : 'translate-y-full'
+            }`}
+          >
+            <button 
+              onClick={handleMobileCtaClick}
+              className="w-full bg-gradient-to-r from-emerald-600 to-emerald-800 hover:from-emerald-500 hover:to-emerald-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transform active:scale-95 transition-all flex items-center justify-center gap-2 animate-shine-effect"
+            >
+              <DollarSign className="w-5 h-5 text-gold-400" />
+              <span className="text-sm uppercase tracking-wide">Quero Lucrar com Festas</span>
+            </button>
+          </div>
         </div>
-        
-        <div className="hidden md:block w-px h-4 bg-white/20"></div>
-        <div className="flex items-center gap-2 text-emerald-100/90">
-            <Eye className="w-3 h-3 md:w-4 md:h-4" />
-            <span>{onlineUsers} interessadas assistindo agora</span>
-        </div>
-      </div>
-
-      <Hero 
-        onCtaClick={() => scrollToSection('pricing')} 
-        onLearnMoreClick={() => scrollToSection('program-details')}
-        spotsLeft={spotsLeft} 
-      />
-      
-      <Suspense fallback={<SectionLoader />}>
-        <PainPoints />
-      </Suspense>
-
-      <Suspense fallback={<SectionLoader />}>
-        <About />
-      </Suspense>
-
-      <Suspense fallback={<SectionLoader />}>
-        <ProgramDetails />
-      </Suspense>
-      
-      <Suspense fallback={<SectionLoader />}>
-        <ProductGallery />
-      </Suspense>
-
-      <Suspense fallback={<SectionLoader />}>
-        <EarningsCalculator spotsLeft={spotsLeft} />
-      </Suspense>
-
-      <Suspense fallback={<SectionLoader />}>
-        <FreePreview onCtaClick={() => scrollToSection('pricing')} />
-      </Suspense>
-
-      <Suspense fallback={<SectionLoader />}>
-        <SocialProof />
-      </Suspense>
-
-      <Suspense fallback={<SectionLoader />}>
-        <Pricing onCtaClick={() => scrollToSection('pricing')} spotsLeft={spotsLeft} />
-      </Suspense>
-
-      <Suspense fallback={<SectionLoader />}>
-        <OptionsComparison onCtaClick={() => scrollToSection('pricing')} />
-      </Suspense>
-
-      <Suspense fallback={<SectionLoader />}>
-        <FAQ />
-      </Suspense>
-      
-      <Suspense fallback={<div className="h-20 bg-emerald-950" />}>
-        <Footer />
-      </Suspense>
-
-      {/* CTA Mobile */}
-      <div 
-        className={`fixed bottom-0 left-0 w-full bg-white border-t-2 border-gold-500 p-3 md:hidden z-40 shadow-[0_-4px_20px_rgba(0,0,0,0.2)] transition-transform duration-500 ease-in-out ${
-          showMobileCta && !hideStickyBars ? 'translate-y-0' : 'translate-y-full'
-        }`}
-      >
-        <button 
-          onClick={() => scrollToSection('pricing')}
-          className="w-full bg-gradient-to-r from-emerald-600 to-emerald-800 hover:from-emerald-500 hover:to-emerald-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transform active:scale-95 transition-all flex items-center justify-center gap-2 animate-shine-effect"
-        >
-          <DollarSign className="w-5 h-5 text-gold-400" />
-          <span className="text-sm uppercase tracking-wide">Quero Lucrar com Festas</span>
-        </button>
-      </div>
-    </div>
+      )}
+    </>
   );
 }

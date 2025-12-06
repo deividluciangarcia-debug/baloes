@@ -139,16 +139,26 @@ const ProductGallery: React.FC = () => {
   // Auto-rotate
   useEffect(() => {
     const interval = setInterval(() => {
-      nextSlide();
+      setCurrentIndex((prev) => (prev + 1) % products.length);
     }, 12000); // 12 seconds per slide
     return () => clearInterval(interval);
   }, [currentIndex, itemsPerPage]);
 
+  const trackNavigation = () => {
+     if (typeof window !== 'undefined' && (window as any).fbq) {
+        (window as any).fbq('trackCustom', 'Interaction_Gallery_Swipe', {
+          content_name: 'Browse Product Gallery'
+        });
+     }
+  };
+
   const nextSlide = () => {
+    trackNavigation();
     setCurrentIndex((prev) => (prev + 1) % products.length);
   };
 
   const prevSlide = () => {
+    trackNavigation();
     setCurrentIndex((prev) => (prev - 1 + products.length) % products.length);
   };
 

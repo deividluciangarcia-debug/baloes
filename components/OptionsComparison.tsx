@@ -6,6 +6,16 @@ interface OptionsComparisonProps {
 }
 
 const OptionsComparison: React.FC<OptionsComparisonProps> = ({ onCtaClick }) => {
+  const handleSuccessClick = () => {
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+        (window as any).fbq('trackCustom', 'Click_Option_Success', {
+          content_name: 'Escolheu o Sucesso (Comparativo)',
+          status: 'High Intent'
+        });
+    }
+    onCtaClick();
+  };
+
   return (
     <section id="options-comparison" className="py-20 bg-gradient-to-b from-emerald-50 to-white">
       <div className="container mx-auto px-4 max-w-5xl">
@@ -86,7 +96,7 @@ const OptionsComparison: React.FC<OptionsComparisonProps> = ({ onCtaClick }) => 
             </ul>
 
             <button 
-                onClick={onCtaClick}
+                onClick={handleSuccessClick}
                 className="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-black py-4 rounded-xl shadow-lg shadow-green-500/30 flex items-center justify-center gap-2 group transition-all transform active:scale-95 text-lg"
             >
                 ESCOLHER O SUCESSO

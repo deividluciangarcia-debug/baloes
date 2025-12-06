@@ -10,7 +10,7 @@ const optimizeImage = (url: string, width = 100) => {
 };
 
 // Componente Interno de Player de Voz (Estilo WhatsApp)
-const VoicePlayer: React.FC<{ audioUrl: string; duration?: string }> = ({ audioUrl, duration = "0:45" }) => {
+const VoicePlayer: React.FC<{ audioUrl: string; duration?: string; handle?: string }> = ({ audioUrl, duration = "0:45", handle }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false); // isReady = true significa que o elemento <audio> foi montado
   const [progress, setProgress] = useState(0);
@@ -20,6 +20,13 @@ const VoicePlayer: React.FC<{ audioUrl: string; duration?: string }> = ({ audioU
   const togglePlay = () => {
     // Primeira vez clicando: monta o componente de audio e inicia o load
     if (!isReady) {
+        // RASTREAMENTO DO PIXEL
+        if (typeof window !== 'undefined' && (window as any).fbq) {
+           (window as any).fbq('trackCustom', 'Interaction_Audio_Play', {
+              content_name: `Depoimento de ${handle}`,
+              content_category: 'Social Proof'
+           });
+        }
         setIsLoading(true);
         setIsReady(true);
         return;
@@ -231,7 +238,7 @@ const SocialProof: React.FC = () => {
               {/* Player de Áudio Otimizado */}
               {t.audio && (
                 <div className="w-full mt-auto">
-                  <VoicePlayer audioUrl={t.audio} duration={t.audioDuration} />
+                  <VoicePlayer audioUrl={t.audio} duration={t.audioDuration} handle={t.handle} />
                   <p className="text-xs text-center text-red-700 mt-3 font-bold">
                      🔊 Ouça o áudio real do depoimento:
                   </p>
