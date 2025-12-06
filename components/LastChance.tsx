@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Timer, TicketPercent, ArrowRight, AlertTriangle, Ban, CheckCircle2, Trophy } from 'lucide-react';
+import { Timer, Percent, ArrowRight, AlertTriangle, Ban, CheckCircle2, Trophy } from 'lucide-react';
 
 interface LastChanceProps {
   step: 'offer1' | 'offer2';
@@ -104,7 +104,7 @@ const LastChance: React.FC<LastChanceProps> = ({ step, onNextStep }) => {
                     
                     <div className="flex-1">
                         <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                            <TicketPercent className="w-6 h-6 md:w-8 md:h-8 text-green-600" />
+                            <Percent className="w-6 h-6 md:w-8 md:h-8 text-green-600" />
                             <span className="font-black text-green-600 uppercase tracking-widest text-xs md:text-sm">Cupom 25% OFF</span>
                         </div>
                         
@@ -188,7 +188,7 @@ const LastChance: React.FC<LastChanceProps> = ({ step, onNextStep }) => {
                             onClick={handleAcceptOffer2}
                             className="w-full bg-gradient-to-r from-gold-500 to-yellow-500 hover:from-gold-400 hover:to-yellow-400 text-slate-900 font-black text-base md:text-xl py-3 md:py-5 px-4 md:px-6 rounded-xl shadow-[0_0_20px_rgba(234,179,8,0.4)] transform hover:scale-[1.02] transition-all flex items-center justify-center gap-2 uppercase tracking-wide animate-pulse-slow"
                         >
-                            <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6" />
+                            <CheckCircle2 className="w-5 h-6 md:w-6 md:h-6" />
                             <span>Aceitar Proposta de R$ 37</span>
                         </button>
                         
