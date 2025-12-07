@@ -18,7 +18,7 @@ const EarningsCalculator: React.FC<EarningsCalculatorProps> = ({ spotsLeft }) =>
   const totalMonthlyProfit = simulationItems.reduce((acc, curr) => acc + curr.total, 0);
 
   return (
-    <section className="py-20 bg-emerald-900 text-white relative overflow-hidden">
+    <section id="earnings-calculator" className="py-20 bg-emerald-900 text-white relative overflow-hidden scroll-mt-20">
       {/* Background Decor */}
       <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-emerald-600 rounded-full blur-[100px] opacity-20"></div>

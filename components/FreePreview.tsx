@@ -69,7 +69,7 @@ const FreePreview: React.FC<FreePreviewProps> = ({ onCtaClick }) => {
   };
 
   return (
-    <section className="py-20 bg-emerald-50 relative overflow-hidden">
+    <section id="free-preview" className="py-20 bg-emerald-50 relative overflow-hidden scroll-mt-20">
       {/* Background Decoration */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-gold-400/10 rounded-full blur-3xl -z-0"></div>
       <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-400/10 rounded-full blur-3xl -z-0"></div>

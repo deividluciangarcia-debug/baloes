@@ -5,6 +5,7 @@ import PixelEvents from './components/PixelEvents';
 
 // Eager load critical components
 // Lazy load below-the-fold components to improve Initial Load Time (LCP/FCP)
+const HowItWorks = lazy(() => import('./components/HowItWorks')); // Nova Seção
 const PainPoints = lazy(() => import('./components/PainPoints'));
 const About = lazy(() => import('./components/About'));
 const ProgramDetails = lazy(() => import('./components/ProgramDetails'));
@@ -347,11 +348,15 @@ export default function App() {
 
           <Hero 
             onCtaClick={() => scrollToSection('pricing')} 
-            onLearnMoreClick={() => scrollToSection('program-details')}
+            onLearnMoreClick={() => scrollToSection('how-it-works')} // Atualizado para nova seção
             spotsLeft={spotsLeft}
-            variant={heroVariant} // Passando a variante do teste A/B para renderização e rastreamento
+            variant={heroVariant} 
           />
           
+          <Suspense fallback={<SectionLoader />}>
+            <HowItWorks /> 
+          </Suspense>
+
           <Suspense fallback={<SectionLoader />}>
             <PainPoints />
           </Suspense>
