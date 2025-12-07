@@ -50,13 +50,15 @@ export default function App() {
   
   // Refs para estado sempre atualizado dentro dos Event Listeners
   const showDownsellPageRef = useRef(showDownsellPage);
+  const downsellStepRef = useRef(downsellStep); // Novo Ref para saber em qual passo estamos
   const ultimatumTypeRef = useRef(ultimatumType); // Ref para o tipo de modal
   const hasHistoryPushedRef = useRef(false);
 
   // Sincroniza os refs com o state
   useEffect(() => {
     showDownsellPageRef.current = showDownsellPage;
-  }, [showDownsellPage]);
+    downsellStepRef.current = downsellStep; // Mantém ref atualizado
+  }, [showDownsellPage, downsellStep]);
 
   useEffect(() => {
     ultimatumTypeRef.current = ultimatumType;
@@ -106,7 +108,7 @@ export default function App() {
 
     // 4. Manipula o evento de "Voltar"
     const handlePopState = (event: PopStateEvent) => {
-        // LÓGICA ESPECIAL: Se o modal de upgrade estiver aberto e clicar voltar
+        // LÓGICA 1: Se o modal de upgrade estiver aberto e clicar voltar
         if (ultimatumTypeRef.current === 'upgrade') {
             event.preventDefault();
             setUltimatumType(null);
@@ -120,15 +122,29 @@ export default function App() {
             return;
         }
 
-        // Se a página de oferta (Downsell) AINDA NÃO está visível
+        // LÓGICA 2: Se já estiver na Oferta 1 (72,75) e clicar voltar -> IR PARA OFERTA 2 (37,00)
+        if (showDownsellPageRef.current && downsellStepRef.current === 'offer1') {
+            event.preventDefault();
+            setDownsellStep('offer2');
+            
+            // Re-empurra estado para segurar na oferta 2 se tentar voltar de novo
+            window.history.pushState({ page: 'downsell-step-2' }, '', window.location.href);
+            
+            if (typeof window !== 'undefined' && (window as any).fbq) {
+               (window as any).fbq('trackCustom', 'BACK-BUTTON-DE-72-PARA-37');
+            }
+            return;
+        }
+
+        // LÓGICA 3: Se a página de oferta (Downsell) AINDA NÃO está visível
         if (!showDownsellPageRef.current) {
             event.preventDefault(); 
             
             // Mostra a página de Downsell (Começando pela oferta 1)
             setShowDownsellPage(true);
-            setDownsellStep('offer1'); // <--- GARANTINDO QUE COMEÇA NA OFERTA 1
+            setDownsellStep('offer1'); 
             
-            // Empurra o estado DE NOVO para permitir a navegação da oferta 1 para a 2 se clicar voltar de novo
+            // Empurra o estado DE NOVO
             window.history.pushState({ page: 'downsell-step-1' }, '', window.location.href);
             
             if (typeof window !== 'undefined' && (window as any).fbq) {
