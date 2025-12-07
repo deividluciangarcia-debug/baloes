@@ -73,18 +73,31 @@ export default function App() {
   }, [showDownsellPage, downsellStep]);
 
   // =========================================================================
-  // PIXEL TRACKING DO TESTE A/B
+  // PIXEL TRACKING DO TESTE A/B E VIEWCONTENT
   // =========================================================================
   useEffect(() => {
-    // Dispara o Pixel Personalizado baseado na variante ativa (PV-VERDE ou PV-CLARA)
     if (typeof window !== 'undefined' && (window as any).fbq) {
+      // 1. Evento Personalizado (A/B Test) - Bom para criar Audiências
       const eventName = heroVariant === 'green' ? 'PV-VERDE' : 'PV-CLARA';
       (window as any).fbq('trackCustom', eventName, {
         teste: 'Teste AB Cores Hero',
         variant: heroVariant
       });
-      // Console log discreto para verificação técnica, se necessário
-      // console.log(`[Teste A/B] Variante: ${heroVariant}`);
+
+      // 2. Evento Padrão ViewContent - Melhor para OTIMIZAÇÃO DE CAMPANHA (Conversão)
+      // O Facebook reconhece "ViewContent" automaticamente como um evento de otimização
+      (window as any).fbq('track', 'ViewContent', {
+        content_name: 'Sales Page - Baloes Lucrativos',
+        content_category: 'Landing Page',
+        content_ids: ['lp-baloes-v1'],
+        content_type: 'product',
+        variant: heroVariant, // Enviamos a variante aqui também
+        value: 0.00,
+        currency: 'BRL'
+      });
+      
+      // Console log para debug se necessário
+      // console.log(`[Pixel] Disparado: ${eventName} e ViewContent`);
     }
   }, [heroVariant]);
 
