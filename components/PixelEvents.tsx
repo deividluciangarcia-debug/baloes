@@ -15,32 +15,31 @@ const PixelEvents: React.FC = () => {
     ];
 
     const trackTimeEvent = (eventName: string, timeLabel: string, ms: number) => {
+      // --- TRACKING FACEBOOK PIXEL ---
       if (typeof window !== 'undefined' && (window as any).fbq) {
         
-        // 1. Rastreamento Personalizado (Mantemos para histórico/backup)
+        // 1. Rastreamento Personalizado
         (window as any).fbq('trackCustom', eventName, {
           content_name: 'Tempo no Site',
           status: timeLabel
         });
 
-        // 2. Rastreamento Padrão LEAD (Solicitado para todos os tempos)
-        // Calculamos um "valor" baseado no tempo (1 min = 1 real de valor percebido de atenção)
-        // Isso ajuda o algoritmo a priorizar quem fica mais tempo se você usar ROAS.
+        // 2. Rastreamento Padrão LEAD (Otimização)
         const valueBasedOnTime = Math.floor(ms / 60000); 
 
         (window as any).fbq('track', 'Lead', {
-            content_name: `Engajamento - ${timeLabel}`, // Diferencia "Lead 1 min" de "Lead 5 min" no painel
+            content_name: `Engajamento - ${timeLabel}`, 
             content_category: 'Time Tracking',
             value: valueBasedOnTime, 
             currency: 'BRL',
             time_spent: timeLabel
         });
 
-        console.log(`%c[Pixel Facebook] LEAD Disparado: ${timeLabel} (Valor: ${valueBasedOnTime})`, 'color: #00ff00; font-weight: bold; background: #000;');
+        console.log(`%c[Pixel Facebook] LEAD: ${timeLabel}`, 'color: #00ff00; font-weight: bold;');
       }
     };
 
-    console.log("%c[Pixel Facebook] Monitoramento de Tempo Iniciado (Todos viram Lead)...", 'color: yellow; background: #000;');
+    console.log("%c[Tracker] Monitoramento de Tempo Iniciado...", 'color: yellow; background: #000;');
 
     const timers: ReturnType<typeof setTimeout>[] = [];
 
@@ -51,7 +50,6 @@ const PixelEvents: React.FC = () => {
 
     return () => {
       timers.forEach(timer => clearTimeout(timer));
-      console.log("%c[Pixel Facebook] Timers Encerrados", 'color: red; background: #000;');
     };
   }, []);
 
