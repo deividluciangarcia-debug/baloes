@@ -108,8 +108,9 @@ export default function App() {
 
     // 4. Manipula o evento de "Voltar"
     const handlePopState = (event: PopStateEvent) => {
-        // LÓGICA 1: Se o modal de upgrade estiver aberto e clicar voltar
-        if (ultimatumTypeRef.current === 'upgrade') {
+        // LÓGICA 1: Se o modal de upgrade OU EXIT INTENT estiver aberto e clicar voltar
+        // MODIFICADO AQUI: Adicionado || ultimatumTypeRef.current === 'exit'
+        if (ultimatumTypeRef.current === 'upgrade' || ultimatumTypeRef.current === 'exit') {
             event.preventDefault();
             setUltimatumType(null);
             
@@ -205,6 +206,9 @@ export default function App() {
     const handleExitIntent = (e: MouseEvent) => {
       // Só ativa se não estiver no downsell, não tiver mostrado modal e tiver vagas
       if (e.clientY < 10 && !hasShownExitIntent && spotsLeft > 0 && !showDownsellPage && !ultimatumType) {
+        // MODIFICADO: Empurra o estado 'exit' no histórico para que o botão voltar funcione
+        window.history.pushState({ modal: 'exit' }, '', window.location.href);
+        
         setUltimatumType('exit');
         setHasShownExitIntent(true);
         if (typeof window !== 'undefined' && (window as any).fbq) (window as any).fbq('trackCustom', 'ATIVOU-EXIT-INTENT-MODAL');
