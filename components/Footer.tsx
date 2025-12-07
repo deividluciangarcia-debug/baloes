@@ -5,6 +5,14 @@ const Footer: React.FC = () => {
   const [modalOpen, setModalOpen] = useState<'privacy' | 'terms' | null>(null);
 
   const openModal = (type: 'privacy' | 'terms') => {
+    // Rastreamento de Documentos Legais
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+        const eventName = type === 'privacy' ? 'LEU-POLITICA' : 'LEU-TERMOS';
+        (window as any).fbq('trackCustom', eventName, {
+            local: 'Footer'
+        });
+    }
+    
     setModalOpen(type);
     document.body.style.overflow = 'hidden'; // Prevent scrolling background
   };

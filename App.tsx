@@ -146,6 +146,13 @@ export default function App() {
       if (e.clientY < 10 && !hasShownExitIntent && spotsLeft > 0 && !showDownsellPage && ultimatumType !== 'scarcity') {
         setUltimatumType('exit');
         setHasShownExitIntent(true);
+        
+        // Rastreamento de disparo do Exit Intent
+        if (typeof window !== 'undefined' && (window as any).fbq) {
+           (window as any).fbq('trackCustom', 'ATIVOU-EXIT-INTENT', {
+             local: 'Global Exit Mouseleave'
+           });
+        }
       }
     };
     document.addEventListener('mouseleave', handleExitIntent);

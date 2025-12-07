@@ -32,7 +32,19 @@ const FAQ: React.FC = () => {
   ];
 
   const toggleFAQ = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
+    const isOpening = openIndex !== index;
+    setOpenIndex(isOpening ? index : null);
+
+    // Rastrear qual dúvida específica foi aberta
+    if (isOpening) {
+        if (typeof window !== 'undefined' && (window as any).fbq) {
+            // Envia o nome da pergunta truncado para não ficar gigante no gerenciador
+            const questionTopic = faqs[index].question.substring(0, 30) + '...';
+            (window as any).fbq('trackCustom', 'ABRIU-DUVIDA', {
+                pergunta: questionTopic
+            });
+        }
+    }
   };
 
   return (
