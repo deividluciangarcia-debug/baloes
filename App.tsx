@@ -48,12 +48,17 @@ export default function App() {
   
   // Refs para estado sempre atualizado dentro dos Event Listeners
   const showDownsellPageRef = useRef(showDownsellPage);
+  const ultimatumTypeRef = useRef(ultimatumType); // Ref para o tipo de modal
   const hasHistoryPushedRef = useRef(false);
 
-  // Sincroniza o ref com o state
+  // Sincroniza os refs com o state
   useEffect(() => {
     showDownsellPageRef.current = showDownsellPage;
   }, [showDownsellPage]);
+
+  useEffect(() => {
+    ultimatumTypeRef.current = ultimatumType;
+  }, [ultimatumType]);
 
   // =========================================================================
   // TESTE A/B
@@ -85,7 +90,7 @@ export default function App() {
         }
     };
 
-    // 2. Tenta empurrar logo ao carregar (funciona em alguns navegadores)
+    // 2. Tenta empurrar logo ao carregar
     pushHistoryState();
 
     // 3. Garante empurrar na primeira interação do usuário
@@ -99,16 +104,29 @@ export default function App() {
 
     // 4. Manipula o evento de "Voltar"
     const handlePopState = (event: PopStateEvent) => {
+        // LÓGICA ESPECIAL: Se o modal de upgrade estiver aberto e clicar voltar
+        if (ultimatumTypeRef.current === 'upgrade') {
+            event.preventDefault();
+            // Fecha o modal
+            setUltimatumType(null);
+            // Abre o Downsell imediatamente
+            setShowDownsellPage(true);
+            setDownsellStep('offer2');
+            
+            // Re-empurra estado para prender na página de downsell se tentar voltar de novo
+            window.history.pushState({ page: 'downsell-triggered' }, '', window.location.href);
+            return;
+        }
+
         // Se a página de oferta (Downsell) AINDA NÃO está visível
         if (!showDownsellPageRef.current) {
-            // Impede o comportamento padrão (opcional, mas bom pra garantir)
             event.preventDefault(); 
             
             // Mostra a página de R$ 37,00
             setShowDownsellPage(true);
             setDownsellStep('offer2');
             
-            // Empurra o estado DE NOVO para prender o usuário se ele tentar voltar novamente
+            // Empurra o estado DE NOVO para prender o usuário
             window.history.pushState({ page: 'downsell' }, '', window.location.href);
             
             if (typeof window !== 'undefined' && (window as any).fbq) {
@@ -125,7 +143,7 @@ export default function App() {
         window.removeEventListener('touchstart', handleInteraction);
         window.removeEventListener('popstate', handlePopState);
     };
-  }, []); // Executa apenas uma vez na montagem
+  }, []); 
 
   // =========================================================================
   // PIXEL TRACKING
@@ -220,6 +238,10 @@ export default function App() {
   
   // 1. Clicou no botão de R$ 67
   const handleAnnualPlanClick = () => {
+    // IMPORTANTE: Adiciona um estado no histórico ao abrir o modal.
+    // Assim, se o usuário clicar em "Voltar", ele cai no evento popstate que abre a oferta de R$ 37.
+    window.history.pushState({ modal: 'upgrade' }, '', window.location.href);
+    
     setUltimatumType('upgrade');
     if (typeof window !== 'undefined' && (window as any).fbq) {
       (window as any).fbq('trackCustom', 'ABRIU-UPGRADE-MODAL', { origin: 'pricing' });
@@ -239,9 +261,9 @@ export default function App() {
     window.location.href = "https://pay.kiwify.com.br/8DJPyTz";
   };
 
-  // 3. RECUSOU Upgrade -> VAI PARA CHECKOUT DE R$ 67,00 IMEDIATAMENTE
+  // 3. RECUSOU Upgrade -> VAI PARA CHECKOUT DE R$ 67,00 IMEDIATAMENTE (Link Atualizado)
   const handleRejectUpgrade = () => {
-     setUltimatumType(null); // Fecha o modal visualmente
+     setUltimatumType(null); 
      
      if (typeof window !== 'undefined' && (window as any).fbq) {
       (window as any).fbq('track', 'InitiateCheckout', {
@@ -250,8 +272,8 @@ export default function App() {
         currency: 'BRL'
       });
     }
-    // Redireciona DIRETAMENTE para o checkout de 67
-    window.location.href = "https://pay.kiwify.com.br/XpMRo1p";
+    // LINK ATUALIZADO
+    window.location.href = "https://pay.kiwify.com.br/CVZ4Q50";
   };
 
   return (
