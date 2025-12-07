@@ -4,8 +4,7 @@ import { Timer, Eye, Loader2, DollarSign } from 'lucide-react';
 import PixelEvents from './components/PixelEvents';
 
 // Eager load critical components
-// Lazy load below-the-fold components to improve Initial Load Time (LCP/FCP)
-const HowItWorks = lazy(() => import('./components/HowItWorks')); // Nova Seção
+const HowItWorks = lazy(() => import('./components/HowItWorks'));
 const PainPoints = lazy(() => import('./components/PainPoints'));
 const About = lazy(() => import('./components/About'));
 const ProgramDetails = lazy(() => import('./components/ProgramDetails'));
@@ -41,228 +40,172 @@ export default function App() {
   const [spotsLeft, setSpotsLeft] = useState(27); 
   const [showMobileCta, setShowMobileCta] = useState(false);
   const [sectionsHidingBars, setSectionsHidingBars] = useState<Set<string>>(new Set());
-  const [ultimatumType, setUltimatumType] = useState<'exit' | 'scarcity' | null>(null);
+  const [ultimatumType, setUltimatumType] = useState<'exit' | 'scarcity' | 'upgrade' | 'downsell-annual' | null>(null);
   const [onlineUsers, setOnlineUsers] = useState(118);
   const [hasShownExitIntent, setHasShownExitIntent] = useState(false);
   const [showDownsellPage, setShowDownsellPage] = useState(false);
-  const [downsellStep, setDownsellStep] = useState<'offer1' | 'offer2'>('offer1');
+  const [downsellStep, setDownsellStep] = useState<'offer1' | 'offer2'>('offer2');
   
+  // Refs para estado sempre atualizado dentro dos Event Listeners
+  const showDownsellPageRef = useRef(showDownsellPage);
+  const hasHistoryPushedRef = useRef(false);
+
+  // Sincroniza o ref com o state
+  useEffect(() => {
+    showDownsellPageRef.current = showDownsellPage;
+  }, [showDownsellPage]);
+
   // =========================================================================
-  // LÓGICA DO TESTE A/B DE CORES (PRODUÇÃO - 50/50 SPLIT)
+  // TESTE A/B
   // =========================================================================
   const [heroVariant] = useState<'green' | 'light'>(() => {
-    // 1. Tenta recuperar a variante já atribuída a este usuário nesta sessão
     try {
       if (typeof window !== 'undefined' && window.sessionStorage) {
          const saved = sessionStorage.getItem('ab_hero_color') as 'green' | 'light';
          if (saved) return saved;
-         
-         // 2. Se for novo visitante, sorteia 50/50
          const random = Math.random() < 0.5 ? 'green' : 'light';
          sessionStorage.setItem('ab_hero_color', random);
          return random;
       }
-    } catch (e) {
-      // Se cookies/storage estiverem bloqueados, fallback silencioso
-      console.warn("SessionStorage access blocked", e);
-    }
-    return 'green'; // Fallback server-side ou erro
+    } catch (e) { console.warn(e); }
+    return 'green';
   });
-
-  const stateRef = useRef({ showDownsellPage, downsellStep });
-  const historyPushedRef = useRef(false);
 
   const hideStickyBars = sectionsHidingBars.size > 0;
 
-  useEffect(() => {
-    stateRef.current = { showDownsellPage, downsellStep };
-  }, [showDownsellPage, downsellStep]);
-
   // =========================================================================
-  // PIXEL TRACKING DO TESTE A/B E VIEWCONTENT
+  // LÓGICA DE BACK REDIRECT (Botão Voltar)
   // =========================================================================
   useEffect(() => {
-    if (typeof window !== 'undefined' && (window as any).fbq) {
-      // 1. Evento Personalizado (A/B Test) - Bom para criar Audiências
-      const eventName = heroVariant === 'green' ? 'PV-VERDE' : 'PV-CLARA';
-      (window as any).fbq('trackCustom', eventName, {
-        teste: 'Teste AB Cores Hero',
-        variant: heroVariant
-      });
-
-      // 2. Evento Padrão ViewContent - Melhor para OTIMIZAÇÃO DE CAMPANHA (Conversão)
-      // O Facebook reconhece "ViewContent" automaticamente como um evento de otimização
-      (window as any).fbq('track', 'ViewContent', {
-        content_name: 'Sales Page - Baloes Lucrativos',
-        content_category: 'Landing Page',
-        content_ids: ['lp-baloes-v1'],
-        content_type: 'product',
-        variant: heroVariant, // Enviamos a variante aqui também
-        value: 0.00,
-        currency: 'BRL'
-      });
-      
-      // Console log para debug se necessário
-      // console.log(`[Pixel] Disparado: ${eventName} e ViewContent`);
-    }
-  }, [heroVariant]);
-
-  // =========================================================================
-  // LÓGICA DE BACK REDIRECT
-  // =========================================================================
-  useEffect(() => {
-    const armHistoryTrap = () => {
-      if (!historyPushedRef.current) {
-        window.history.pushState({ trapped: true }, '', window.location.href);
-        historyPushedRef.current = true;
-      }
+    // 1. Função para empurrar o estado no histórico
+    const pushHistoryState = () => {
+        if (!hasHistoryPushedRef.current) {
+            window.history.pushState({ page: 'home' }, '', window.location.href);
+            hasHistoryPushedRef.current = true;
+        }
     };
 
-    armHistoryTrap();
+    // 2. Tenta empurrar logo ao carregar (funciona em alguns navegadores)
+    pushHistoryState();
 
+    // 3. Garante empurrar na primeira interação do usuário
     const handleInteraction = () => {
-      armHistoryTrap();
+        pushHistoryState();
     };
 
-    window.addEventListener('touchstart', handleInteraction, { capture: true, once: true });
-    window.addEventListener('click', handleInteraction, { capture: true, once: true });
-    window.addEventListener('mousemove', handleInteraction, { capture: true, once: true });
-    window.addEventListener('scroll', handleInteraction, { capture: true, once: true });
+    window.addEventListener('mouseover', handleInteraction, { once: true });
+    window.addEventListener('click', handleInteraction, { once: true });
+    window.addEventListener('touchstart', handleInteraction, { once: true });
 
+    // 4. Manipula o evento de "Voltar"
     const handlePopState = (event: PopStateEvent) => {
-      event.preventDefault();
-
-      const { showDownsellPage: isShowing, downsellStep: currentStep } = stateRef.current;
-
-      if (!isShowing) {
-        setShowDownsellPage(true);
-        setDownsellStep('offer1'); 
-        window.history.pushState({ trapped: true }, '', window.location.href);
-      } 
-      else if (currentStep === 'offer1') {
-        setDownsellStep('offer2'); 
-        window.history.pushState({ trapped: true }, '', window.location.href);
-      }
-      else {
-         window.history.pushState({ trapped: true }, '', window.location.href);
-      }
+        // Se a página de oferta (Downsell) AINDA NÃO está visível
+        if (!showDownsellPageRef.current) {
+            // Impede o comportamento padrão (opcional, mas bom pra garantir)
+            event.preventDefault(); 
+            
+            // Mostra a página de R$ 37,00
+            setShowDownsellPage(true);
+            setDownsellStep('offer2');
+            
+            // Empurra o estado DE NOVO para prender o usuário se ele tentar voltar novamente
+            window.history.pushState({ page: 'downsell' }, '', window.location.href);
+            
+            if (typeof window !== 'undefined' && (window as any).fbq) {
+               (window as any).fbq('trackCustom', 'ATIVOU-BACK-REDIRECT-37');
+            }
+        }
     };
 
     window.addEventListener('popstate', handlePopState);
 
     return () => {
-      window.removeEventListener('touchstart', handleInteraction);
-      window.removeEventListener('click', handleInteraction);
-      window.removeEventListener('mousemove', handleInteraction);
-      window.removeEventListener('scroll', handleInteraction);
-      window.removeEventListener('popstate', handlePopState);
+        window.removeEventListener('mouseover', handleInteraction);
+        window.removeEventListener('click', handleInteraction);
+        window.removeEventListener('touchstart', handleInteraction);
+        window.removeEventListener('popstate', handlePopState);
     };
-  }, []);
+  }, []); // Executa apenas uma vez na montagem
 
-  // Lógica de Vagas
+  // =========================================================================
+  // PIXEL TRACKING
+  // =========================================================================
+  useEffect(() => {
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      const eventName = heroVariant === 'green' ? 'PV-VERDE' : 'PV-CLARA';
+      (window as any).fbq('trackCustom', eventName, { teste: 'Teste AB Cores Hero', variant: heroVariant });
+      (window as any).fbq('track', 'ViewContent', {
+        content_name: 'Sales Page - Baloes Lucrativos',
+        content_ids: ['lp-baloes-v1'],
+        content_type: 'product',
+        variant: heroVariant,
+        value: 0.00,
+        currency: 'BRL'
+      });
+    }
+  }, [heroVariant]);
+
+  // Lógica de Vagas (Timer)
   useEffect(() => {
     let delay;
-    if (spotsLeft > 15) {
-      delay = Math.floor(Math.random() * (20000 - 8000 + 1) + 8000); 
-    } else if (spotsLeft > 5) {
-      delay = Math.floor(Math.random() * (60000 - 30000 + 1) + 30000);
-    } else {
-      delay = 140000; 
-    }
+    if (spotsLeft > 15) delay = Math.floor(Math.random() * (20000 - 8000 + 1) + 8000); 
+    else if (spotsLeft > 5) delay = Math.floor(Math.random() * (60000 - 30000 + 1) + 30000);
+    else delay = 140000; 
     
-    const timer = setTimeout(() => {
-      setSpotsLeft((prev) => (prev > 1 ? prev - 1 : prev));
-    }, delay);
-
+    const timer = setTimeout(() => setSpotsLeft((prev) => (prev > 1 ? prev - 1 : prev)), delay);
     return () => clearTimeout(timer);
   }, [spotsLeft]);
 
+  // Lógica Users Online
   useEffect(() => {
     const interval = setInterval(() => {
-      setOnlineUsers((prev) => {
-        const change = Math.floor(Math.random() * 5) - 2; 
-        return Math.max(85, prev + change); 
-      });
+      setOnlineUsers((prev) => Math.max(85, prev + (Math.floor(Math.random() * 5) - 2)));
     }, 4000);
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    if (spotsLeft === 1) { 
-      setUltimatumType('scarcity');
-    }
-  }, [spotsLeft]);
-
+  // Exit Intent (Mouse Leave - Topo da página)
   useEffect(() => {
     const handleExitIntent = (e: MouseEvent) => {
-      if (e.clientY < 10 && !hasShownExitIntent && spotsLeft > 0 && !showDownsellPage && ultimatumType !== 'scarcity') {
+      // Só ativa se não estiver no downsell, não tiver mostrado modal e tiver vagas
+      if (e.clientY < 10 && !hasShownExitIntent && spotsLeft > 0 && !showDownsellPage && !ultimatumType) {
         setUltimatumType('exit');
         setHasShownExitIntent(true);
-        
-        // Rastreamento de disparo do Exit Intent
-        if (typeof window !== 'undefined' && (window as any).fbq) {
-           (window as any).fbq('trackCustom', 'ATIVOU-EXIT-INTENT', {
-             local: 'Global Exit Mouseleave'
-           });
-        }
+        if (typeof window !== 'undefined' && (window as any).fbq) (window as any).fbq('trackCustom', 'ATIVOU-EXIT-INTENT-MODAL');
       }
     };
     document.addEventListener('mouseleave', handleExitIntent);
     return () => document.removeEventListener('mouseleave', handleExitIntent);
   }, [hasShownExitIntent, spotsLeft, showDownsellPage, ultimatumType]);
 
-  // Observer para monitorar Preços, Galeria e OptionsComparison
+  // Observer para esconder barras flutuantes
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
+    const observer = new IntersectionObserver((entries) => {
         setSectionsHidingBars((prev) => {
           const newSet = new Set(prev);
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              newSet.add(entry.target.id);
-            } else {
-              newSet.delete(entry.target.id);
-            }
-          });
+          entries.forEach((entry) => entry.isIntersecting ? newSet.add(entry.target.id) : newSet.delete(entry.target.id));
           return newSet;
         });
-      },
-      { threshold: 0.1 } 
-    );
+      }, { threshold: 0.1 });
 
     const checkForElements = setInterval(() => {
-      const pricingSection = document.getElementById('pricing');
-      const gallerySection = document.getElementById('product-gallery');
-      const optionsSection = document.getElementById('options-comparison');
-      
-      if (pricingSection) observer.observe(pricingSection);
-      if (gallerySection) observer.observe(gallerySection);
-      if (optionsSection) observer.observe(optionsSection);
-
-      if (pricingSection && gallerySection && optionsSection) {
-        clearInterval(checkForElements);
-      }
+      const els = ['pricing', 'product-gallery', 'options-comparison'].map(id => document.getElementById(id));
+      els.forEach(el => el && observer.observe(el));
+      if (els.every(el => el)) clearInterval(checkForElements);
     }, 500);
 
-    return () => {
-      clearInterval(checkForElements);
-      observer.disconnect();
-    };
+    return () => { clearInterval(checkForElements); observer.disconnect(); };
   }, []);
 
+  // Mobile CTA Scroll
   useEffect(() => {
-    const handleScroll = () => {
-      setShowMobileCta(window.scrollY > 900);
-    };
+    const handleScroll = () => setShowMobileCta(window.scrollY > 900);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const getStickyBarColor = () => {
@@ -271,79 +214,101 @@ export default function App() {
     return 'bg-red-700';
   };
 
-  const handleMobileCtaClick = () => {
-    // Rastreamento Específico Mobile
+  // ------------------------------------------------------------------
+  //  FLUXO DE VENDAS E MODAIS
+  // ------------------------------------------------------------------
+  
+  // 1. Clicou no botão de R$ 67
+  const handleAnnualPlanClick = () => {
+    setUltimatumType('upgrade');
     if (typeof window !== 'undefined' && (window as any).fbq) {
-      (window as any).fbq('trackCustom', 'BTN-MOBILE-FLUTUANTE', {
-        local: 'Barra Fixa Inferior',
-        variant: heroVariant
-      });
+      (window as any).fbq('trackCustom', 'ABRIU-UPGRADE-MODAL', { origin: 'pricing' });
     }
-    scrollToSection('pricing');
   };
 
-  // RENDERIZAÇÃO PRINCIPAL
+  // 2. ACEITOU Upgrade Vitalício (R$ 72,75)
+  const handleAcceptUpgrade = () => {
+    setUltimatumType(null);
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('track', 'InitiateCheckout', {
+        content_name: 'Curso Baloes - Vitalicio (Upgrade 25% OFF)',
+        value: 72.75,
+        currency: 'BRL'
+      });
+    }
+    window.location.href = "https://pay.kiwify.com.br/8DJPyTz";
+  };
+
+  // 3. RECUSOU Upgrade -> VAI PARA CHECKOUT DE R$ 67,00 IMEDIATAMENTE
+  const handleRejectUpgrade = () => {
+     setUltimatumType(null); // Fecha o modal visualmente
+     
+     if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('track', 'InitiateCheckout', {
+        content_name: 'Curso Baloes - Anual (Recusou Upgrade)',
+        value: 67.00,
+        currency: 'BRL'
+      });
+    }
+    // Redireciona DIRETAMENTE para o checkout de 67
+    window.location.href = "https://pay.kiwify.com.br/XpMRo1p";
+  };
+
   return (
     <>
       <PixelEvents />
+      <Suspense fallback={null}><SalesNotifications /></Suspense>
 
-      <Suspense fallback={null}>
-         <SalesNotifications />
-      </Suspense>
-
+      {/* MODAL GERAL (Exit Intent, Upgrade, Scarcity) */}
       {ultimatumType && (
         <Suspense fallback={null}>
           <UltimatumModal 
             type={ultimatumType}
             onClose={() => {
-              setUltimatumType(null);
-              setShowDownsellPage(true);
-              setDownsellStep('offer1');
-              window.history.pushState({ trapped: true }, '', window.location.href);
+              if (ultimatumType === 'upgrade') {
+                 handleRejectUpgrade(); // Recusou upgrade -> CHECKOUT 67 DIRETO
+              } else if (ultimatumType === 'exit') {
+                 // Fechou o modal de exit intent -> Ativa a página de oferta 37
+                 setUltimatumType(null);
+                 setShowDownsellPage(true);
+                 setDownsellStep('offer2');
+              } else {
+                 setUltimatumType(null);
+              }
             }} 
             onCtaClick={() => {
-              setUltimatumType(null);
-              scrollToSection('pricing');
+              if (ultimatumType === 'upgrade') handleAcceptUpgrade();
+              else {
+                setUltimatumType(null);
+                scrollToSection('pricing');
+              }
             }} 
           />
         </Suspense>
       )}
 
+      {/* PÁGINA DE DOWNSELL (R$ 37) - ATIVADA PELO BACK REDIRECT */}
       {showDownsellPage ? (
         <Suspense fallback={<PageLoader />}>
           <LastChance 
             step={downsellStep} 
-            onNextStep={() => {
-              setDownsellStep('offer2');
-              window.history.pushState({ trapped: true }, '', window.location.href);
-            }} 
+            onNextStep={() => setDownsellStep('offer2')} // Se tiver logica interna
           />
         </Suspense>
       ) : (
+        // PÁGINA PRINCIPAL
         <div className="min-h-screen flex flex-col font-sans relative bg-emerald-50 text-slate-900">
           
-          <div 
-            className={`
-              ${getStickyBarColor()} text-white py-2 px-2 md:px-4 text-center text-[10px] md:text-sm font-semibold 
-              sticky top-0 z-50 shadow-xl flex flex-col md:flex-row justify-center items-center md:gap-6 gap-1 
-              border-b border-white/10 transition-transform duration-500
-              ${hideStickyBars ? '-translate-y-full' : 'translate-y-0'}
-            `}
-          >
+          <div className={`${getStickyBarColor()} text-white py-2 px-2 md:px-4 text-center text-[10px] md:text-sm font-semibold sticky top-0 z-50 shadow-xl flex flex-col md:flex-row justify-center items-center md:gap-6 gap-1 border-b border-white/10 transition-transform duration-500 ${hideStickyBars ? '-translate-y-full' : 'translate-y-0'}`}>
             <div className="flex items-center gap-2 drop-shadow-sm">
                 <Timer className="w-3 h-3 md:w-4 md:h-4 text-yellow-400" />
                 <span>
-                  <span className={spotsLeft <= 9 ? "text-red-400 font-black animate-pulse" : "text-yellow-400 font-bold"}>
-                    OPORTUNIDADE:
-                  </span> 
+                  <span className={spotsLeft <= 9 ? "text-red-400 font-black animate-pulse" : "text-yellow-400 font-bold"}>OPORTUNIDADE:</span> 
                   <span> Apenas </span>
-                  <span key={spotsLeft} className="text-white font-black text-sm md:text-lg mx-1 inline-block animate-[pulse_0.5s_ease-in-out]">
-                    {spotsLeft}
-                  </span> 
+                  <span key={spotsLeft} className="text-white font-black text-sm md:text-lg mx-1 inline-block animate-[pulse_0.5s_ease-in-out]">{spotsLeft}</span> 
                   <span> vagas para a Turma de Lucro!</span>
                 </span>
             </div>
-            
             <div className="hidden md:block w-px h-4 bg-white/20"></div>
             <div className="flex items-center gap-2 text-emerald-100/90">
                 <Eye className="w-3 h-3 md:w-4 md:h-4" />
@@ -353,67 +318,40 @@ export default function App() {
 
           <Hero 
             onCtaClick={() => scrollToSection('pricing')} 
-            onLearnMoreClick={() => scrollToSection('how-it-works')} // Atualizado para nova seção
+            onLearnMoreClick={() => scrollToSection('how-it-works')} 
             spotsLeft={spotsLeft}
             variant={heroVariant} 
           />
           
-          <Suspense fallback={<SectionLoader />}>
-            <HowItWorks /> 
-          </Suspense>
+          <Suspense fallback={<SectionLoader />}><HowItWorks /></Suspense>
+          <Suspense fallback={<SectionLoader />}><PainPoints /></Suspense>
+          <Suspense fallback={<SectionLoader />}><About /></Suspense>
+          <Suspense fallback={<SectionLoader />}><ProgramDetails /></Suspense>
+          <Suspense fallback={<SectionLoader />}><ProductGallery /></Suspense>
+          <Suspense fallback={<SectionLoader />}><EarningsCalculator spotsLeft={spotsLeft} /></Suspense>
+          <Suspense fallback={<SectionLoader />}><FreePreview onCtaClick={() => scrollToSection('pricing')} /></Suspense>
+          <Suspense fallback={<SectionLoader />}><SocialProof /></Suspense>
 
           <Suspense fallback={<SectionLoader />}>
-            <PainPoints />
+            <Pricing 
+              onCtaClick={() => scrollToSection('pricing')} 
+              onAnnualPlanClick={handleAnnualPlanClick}
+              spotsLeft={spotsLeft} 
+            />
           </Suspense>
 
-          <Suspense fallback={<SectionLoader />}>
-            <About />
-          </Suspense>
+          <Suspense fallback={<SectionLoader />}><OptionsComparison onCtaClick={() => scrollToSection('pricing')} /></Suspense>
+          <Suspense fallback={<SectionLoader />}><FAQ /></Suspense>
+          <Suspense fallback={<div className="h-20 bg-emerald-950" />}><Footer /></Suspense>
 
-          <Suspense fallback={<SectionLoader />}>
-            <ProgramDetails />
-          </Suspense>
-          
-          <Suspense fallback={<SectionLoader />}>
-            <ProductGallery />
-          </Suspense>
-
-          <Suspense fallback={<SectionLoader />}>
-            <EarningsCalculator spotsLeft={spotsLeft} />
-          </Suspense>
-
-          <Suspense fallback={<SectionLoader />}>
-            <FreePreview onCtaClick={() => scrollToSection('pricing')} />
-          </Suspense>
-
-          <Suspense fallback={<SectionLoader />}>
-            <SocialProof />
-          </Suspense>
-
-          <Suspense fallback={<SectionLoader />}>
-            <Pricing onCtaClick={() => scrollToSection('pricing')} spotsLeft={spotsLeft} />
-          </Suspense>
-
-          <Suspense fallback={<SectionLoader />}>
-            <OptionsComparison onCtaClick={() => scrollToSection('pricing')} />
-          </Suspense>
-
-          <Suspense fallback={<SectionLoader />}>
-            <FAQ />
-          </Suspense>
-          
-          <Suspense fallback={<div className="h-20 bg-emerald-950" />}>
-            <Footer />
-          </Suspense>
-
-          {/* CTA Mobile */}
-          <div 
-            className={`fixed bottom-0 left-0 w-full bg-white border-t-2 border-gold-500 p-3 md:hidden z-40 shadow-[0_-4px_20px_rgba(0,0,0,0.2)] transition-transform duration-500 ease-in-out ${
-              showMobileCta && !hideStickyBars ? 'translate-y-0' : 'translate-y-full'
-            }`}
-          >
+          <div className={`fixed bottom-0 left-0 w-full bg-white border-t-2 border-gold-500 p-3 md:hidden z-40 shadow-[0_-4px_20px_rgba(0,0,0,0.2)] transition-transform duration-500 ease-in-out ${showMobileCta && !hideStickyBars ? 'translate-y-0' : 'translate-y-full'}`}>
             <button 
-              onClick={handleMobileCtaClick}
+              onClick={() => {
+                if (typeof window !== 'undefined' && (window as any).fbq) {
+                  (window as any).fbq('trackCustom', 'BTN-MOBILE-FLUTUANTE', { local: 'Barra Fixa Inferior' });
+                }
+                scrollToSection('pricing');
+              }}
               className="w-full bg-gradient-to-r from-emerald-600 to-emerald-800 hover:from-emerald-500 hover:to-emerald-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transform active:scale-95 transition-all flex items-center justify-center gap-2 animate-shine-effect"
             >
               <DollarSign className="w-5 h-5 text-gold-400" />

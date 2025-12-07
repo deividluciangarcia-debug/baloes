@@ -36,6 +36,46 @@ const HowItWorks: React.FC = () => {
     }
   };
 
+  // --- HANDLERS DE RASTREAMENTO ---
+
+  const handleSimulatorClick = () => {
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+        (window as any).fbq('trackCustom', 'BTN-HUB-SIMULADOR', {
+            local: 'HowItWorks Section',
+            intent: 'High'
+        });
+    }
+    scrollTo('earnings-calculator');
+  };
+
+  const handleFreeClassClick = () => {
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+        (window as any).fbq('trackCustom', 'BTN-HUB-AULA-GRATIS', {
+            local: 'HowItWorks Section',
+            intent: 'Medium'
+        });
+    }
+    scrollTo('free-preview');
+  };
+
+  const handleBuyClick = () => {
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+        // Evento Personalizado de Navegação
+        (window as any).fbq('trackCustom', 'BTN-HUB-COMPRAR', {
+            local: 'HowItWorks Section',
+            intent: 'Very High'
+        });
+        
+        // Opcional: Se considerar clicar aqui como 'Adicionar ao Carrinho'
+        (window as any).fbq('track', 'AddToCart', {
+            content_name: 'Hub Navegação - Começar Agora',
+            value: 97.00,
+            currency: 'BRL'
+        });
+    }
+    scrollTo('pricing');
+  };
+
   return (
     <section id="how-it-works" className="py-24 bg-white relative overflow-hidden">
       {/* Background Decor */}
@@ -137,7 +177,7 @@ const HowItWorks: React.FC = () => {
                     
                     {/* Option 1: Calculator */}
                     <button 
-                        onClick={() => scrollTo('earnings-calculator')}
+                        onClick={handleSimulatorClick}
                         className="group bg-white/5 hover:bg-white/10 border border-white/20 hover:border-emerald-400 p-8 rounded-2xl transition-all duration-300 flex flex-col items-center gap-4 backdrop-blur-sm hover:shadow-[0_0_30px_rgba(16,185,129,0.2)]"
                     >
                         <div className="bg-emerald-500/20 p-4 rounded-full text-emerald-300 group-hover:text-emerald-950 group-hover:bg-emerald-400 transition-colors">
@@ -151,7 +191,7 @@ const HowItWorks: React.FC = () => {
 
                     {/* Option 2: Free Class */}
                     <button 
-                        onClick={() => scrollTo('free-preview')}
+                        onClick={handleFreeClassClick}
                         className="group bg-white/5 hover:bg-white/10 border border-white/20 hover:border-red-400 p-8 rounded-2xl transition-all duration-300 flex flex-col items-center gap-4 backdrop-blur-sm hover:shadow-[0_0_30px_rgba(248,113,113,0.2)]"
                     >
                         <div className="bg-red-500/20 p-4 rounded-full text-red-300 group-hover:text-red-950 group-hover:bg-red-400 transition-colors">
@@ -165,7 +205,7 @@ const HowItWorks: React.FC = () => {
 
                     {/* Option 3: Buy (Primary) */}
                     <button 
-                        onClick={() => scrollTo('pricing')}
+                        onClick={handleBuyClick}
                         className="group bg-gradient-to-br from-gold-500 to-yellow-600 hover:from-white hover:to-white border border-gold-400 p-8 rounded-2xl transition-all duration-300 flex flex-col items-center gap-4 shadow-[0_0_20px_rgba(234,179,8,0.4)] transform hover:-translate-y-2"
                     >
                         <div className="bg-white/20 p-4 rounded-full text-white group-hover:text-emerald-950 group-hover:scale-110 transition-all">
