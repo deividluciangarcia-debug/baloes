@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Timer, Percent, ArrowRight, AlertTriangle, Ban, CheckCircle2, Trophy, Gift, Star, ShieldCheck } from 'lucide-react';
+import { Timer, ArrowRight, Star, ShieldCheck, CheckCircle2, AlertCircle, XCircle, Gift } from 'lucide-react';
 
 interface LastChanceProps {
   step: 'offer1' | 'offer2';
@@ -10,10 +10,13 @@ const LastChance: React.FC<LastChanceProps> = ({ step, onNextStep }) => {
   const [timeLeft, setTimeLeft] = useState(180);
   const [isActive, setIsActive] = useState(true);
 
-  // Reinicia o timer e configurações quando muda para a oferta 2
+  // Reinicia o timer e configurações quando muda de etapa
   useEffect(() => {
-    if (step === 'offer2') {
-        setTimeLeft(120); // 2 minutos para pressão final
+    if (step === 'offer1') {
+        setTimeLeft(180); // 3 minutos para primeira oferta
+        setIsActive(true);
+    } else if (step === 'offer2') {
+        setTimeLeft(120); // 2 minutos para oferta final
         setIsActive(true);
     }
   }, [step]);
@@ -39,7 +42,7 @@ const LastChance: React.FC<LastChanceProps> = ({ step, onNextStep }) => {
     return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
 
-  const progressPercentage = (timeLeft / 180) * 100;
+  const progressPercentage = (timeLeft / (step === 'offer1' ? 180 : 120)) * 100;
 
   const handleAcceptOffer1 = () => {
     if (typeof window !== 'undefined' && (window as any).fbq) {
@@ -52,7 +55,11 @@ const LastChance: React.FC<LastChanceProps> = ({ step, onNextStep }) => {
     setTimeout(() => { window.location.href = "https://pay.kiwify.com.br/8DJPyTz"; }, 300);
   };
 
+  // ESTA FUNÇÃO É CRÍTICA: Chama o prop que leva para o step offer2
   const handleRejectOffer1 = () => {
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('trackCustom', 'RECUSOU-72-FOI-PARA-37');
+    }
     onNextStep();
   };
 
@@ -70,30 +77,101 @@ const LastChance: React.FC<LastChanceProps> = ({ step, onNextStep }) => {
   return (
     <section className="bg-emerald-50 min-h-screen md:min-h-0 flex flex-col justify-center py-4 md:py-20 relative overflow-hidden">
       
-      {/* Background Decor */}
-      {step === 'offer2' && (
-        <>
-            <div className="absolute top-0 left-0 w-full h-full bg-emerald-950 opacity-100 z-0"></div>
-            <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-600 rounded-full blur-[100px] opacity-30 z-0"></div>
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-gold-600 rounded-full blur-[100px] opacity-20 z-0"></div>
-            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 z-0"></div>
-        </>
-      )}
-      
+      {/* Background Decor Universal */}
+      <div className="absolute top-0 left-0 w-full h-full bg-emerald-950 opacity-100 z-0"></div>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-600 rounded-full blur-[100px] opacity-30 z-0"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gold-600 rounded-full blur-[100px] opacity-20 z-0"></div>
+      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 z-0"></div>
+
       <div className="container mx-auto px-4 max-w-4xl relative z-10 flex-grow flex flex-col justify-center">
         
         {/* =========================================================================
-            ETAPA 1: OFERTA DE R$ 72,75 (25% OFF) - MANTIDA SIMPLES
+            ETAPA 1: OFERTA DE R$ 72,75 (25% OFF) - DESIGN VERDE PROSPERIDADE
            ========================================================================= */}
         {step === 'offer1' && (
-          <div className="bg-white rounded-3xl shadow-2xl p-8 border-t-8 border-red-500 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                {/* Conteúdo Etapa 1 omitido para brevidade, foco na etapa 2 */}
-                {/* Caso precise da etapa 1, ela seria a mesma lógica visual anterior */}
-                <div className="text-center">
-                    <h2 className="text-3xl font-bold mb-4">Oportunidade de Desconto</h2>
-                    <button onClick={handleAcceptOffer1} className="bg-green-600 text-white px-6 py-3 rounded">Aceitar R$ 72,75</button>
-                    <button onClick={handleRejectOffer1} className="block w-full mt-4 text-slate-500">Recusar</button>
+          <div className="animate-in fade-in zoom-in-95 duration-500">
+             
+             <div className="text-center mb-6 md:mb-8">
+                <div className="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-1.5 rounded-full font-bold text-xs uppercase tracking-widest mb-4 shadow-lg animate-pulse">
+                    <AlertCircle className="w-3 h-3 text-white" />
+                    Espere! Não vá ainda
                 </div>
+                <h2 className="text-3xl md:text-5xl font-serif font-bold text-white leading-tight mb-3 drop-shadow-lg">
+                    Esqueceu de Ativar seu <br/>
+                    <span className="text-gold-400">Cupom de Desconto?</span>
+                </h2>
+                <p className="text-emerald-100 text-sm md:text-lg font-medium max-w-2xl mx-auto leading-relaxed">
+                    Percebi que você estava saindo sem acessar o treinamento. Como acredito no seu potencial, liberei um desconto especial de 25%.
+                </p>
+            </div>
+
+            {/* Card Oferta 1 */}
+            <div className="bg-white rounded-3xl shadow-[0_0_50px_rgba(16,185,129,0.3)] border-4 border-gold-500 overflow-hidden relative w-full max-w-2xl mx-auto">
+                
+                {/* Header Dourado */}
+                <div className="bg-gradient-to-r from-gold-500 to-yellow-400 py-3 px-4 text-center">
+                    <span className="text-emerald-950 font-black uppercase tracking-widest text-sm flex items-center justify-center gap-2">
+                        <Star className="w-4 h-4 fill-emerald-950" />
+                        Acesso Vitalício + Bônus Inclusos
+                        <Star className="w-4 h-4 fill-emerald-950" />
+                    </span>
+                </div>
+
+                <div className="p-6 md:p-8 relative">
+                    
+                    <div className="flex flex-col items-center justify-center text-center mb-6">
+                        <span className="text-slate-400 text-lg line-through decoration-red-500 decoration-2 font-medium">De R$ 97,00</span>
+                        <div className="flex items-center gap-1">
+                            <span className="text-2xl font-bold text-emerald-700 mt-2">Por apenas:</span>
+                            <span className="text-6xl font-black text-emerald-900 tracking-tighter">72<span className="text-2xl">,75</span></span>
+                        </div>
+                        <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold mt-2 border border-green-200">
+                            Economia Imediata de R$ 24,25
+                        </span>
+                    </div>
+
+                    <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-100 mb-8 text-left max-w-sm mx-auto">
+                        <ul className="space-y-2">
+                            <li className="flex items-center gap-2 text-sm text-slate-700 font-bold">
+                                <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
+                                <span>Acesso Vitalício ao Curso</span>
+                            </li>
+                            <li className="flex items-center gap-2 text-sm text-slate-700 font-bold">
+                                <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
+                                <span>Todos os 3 Bônus VIPs</span>
+                            </li>
+                            <li className="flex items-center gap-2 text-sm text-slate-700 font-bold">
+                                <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
+                                <span>Certificado Incluso</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div className="space-y-3">
+                        <button 
+                            onClick={handleAcceptOffer1}
+                            className="w-full bg-green-600 hover:bg-green-500 text-white font-black text-lg py-4 rounded-xl shadow-lg transform hover:scale-[1.02] transition-all flex items-center justify-center gap-2 uppercase tracking-wide"
+                        >
+                            Sim! Quero Desconto de 25%
+                            <ArrowRight className="w-5 h-5" />
+                        </button>
+                        
+                        <button 
+                            onClick={handleRejectOffer1}
+                            className="w-full bg-transparent hover:bg-slate-50 text-slate-400 hover:text-red-500 font-medium py-3 rounded-xl transition-colors text-sm flex items-center justify-center gap-2 group"
+                        >
+                            <XCircle className="w-4 h-4 group-hover:text-red-500" />
+                            Não quero desconto, prefiro perder a vaga.
+                        </button>
+                    </div>
+
+                    {/* Timer Footer */}
+                    <div className="mt-6 pt-4 border-t border-slate-100 flex justify-center items-center gap-2 text-xs text-slate-500 font-mono">
+                        <Timer className="w-3 h-3" />
+                        Oferta expira em: {formatTime(timeLeft)}
+                    </div>
+                </div>
+            </div>
           </div>
         )}
 
@@ -102,7 +180,7 @@ const LastChance: React.FC<LastChanceProps> = ({ step, onNextStep }) => {
             "A Última Tentativa" - Focado em Dinheiro e Valor
            ========================================================================= */}
         {step === 'offer2' && (
-          <div className="animate-in zoom-in-95 duration-500">
+          <div className="animate-in fade-in zoom-in-95 duration-500">
              
              <div className="text-center mb-8">
                 <div className="inline-flex items-center gap-2 bg-emerald-900/50 border border-gold-500 text-gold-400 px-4 py-1.5 rounded-full font-bold text-xs uppercase tracking-widest mb-4 shadow-lg">

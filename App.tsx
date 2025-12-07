@@ -44,7 +44,9 @@ export default function App() {
   const [onlineUsers, setOnlineUsers] = useState(118);
   const [hasShownExitIntent, setHasShownExitIntent] = useState(false);
   const [showDownsellPage, setShowDownsellPage] = useState(false);
-  const [downsellStep, setDownsellStep] = useState<'offer1' | 'offer2'>('offer2');
+  
+  // CORREÇÃO AQUI: Começa na offer1 quando ativado
+  const [downsellStep, setDownsellStep] = useState<'offer1' | 'offer2'>('offer1');
   
   // Refs para estado sempre atualizado dentro dos Event Listeners
   const showDownsellPageRef = useRef(showDownsellPage);
@@ -107,14 +109,14 @@ export default function App() {
         // LÓGICA ESPECIAL: Se o modal de upgrade estiver aberto e clicar voltar
         if (ultimatumTypeRef.current === 'upgrade') {
             event.preventDefault();
-            // Fecha o modal
             setUltimatumType(null);
-            // Abre o Downsell imediatamente
-            setShowDownsellPage(true);
-            setDownsellStep('offer2');
             
-            // Re-empurra estado para prender na página de downsell se tentar voltar de novo
-            window.history.pushState({ page: 'downsell-triggered' }, '', window.location.href);
+            // Abre o Downsell Step 1 (R$ 72,75)
+            setShowDownsellPage(true);
+            setDownsellStep('offer1');
+            
+            // Re-empurra estado para permitir voltar novamente para a oferta 2
+            window.history.pushState({ page: 'downsell-triggered-1' }, '', window.location.href);
             return;
         }
 
@@ -122,15 +124,15 @@ export default function App() {
         if (!showDownsellPageRef.current) {
             event.preventDefault(); 
             
-            // Mostra a página de R$ 37,00
+            // Mostra a página de Downsell (Começando pela oferta 1)
             setShowDownsellPage(true);
-            setDownsellStep('offer2');
+            setDownsellStep('offer1'); // <--- GARANTINDO QUE COMEÇA NA OFERTA 1
             
-            // Empurra o estado DE NOVO para prender o usuário
-            window.history.pushState({ page: 'downsell' }, '', window.location.href);
+            // Empurra o estado DE NOVO para permitir a navegação da oferta 1 para a 2 se clicar voltar de novo
+            window.history.pushState({ page: 'downsell-step-1' }, '', window.location.href);
             
             if (typeof window !== 'undefined' && (window as any).fbq) {
-               (window as any).fbq('trackCustom', 'ATIVOU-BACK-REDIRECT-37');
+               (window as any).fbq('trackCustom', 'ATIVOU-BACK-REDIRECT-72');
             }
         }
     };
@@ -238,10 +240,7 @@ export default function App() {
   
   // 1. Clicou no botão de R$ 67
   const handleAnnualPlanClick = () => {
-    // IMPORTANTE: Adiciona um estado no histórico ao abrir o modal.
-    // Assim, se o usuário clicar em "Voltar", ele cai no evento popstate que abre a oferta de R$ 37.
     window.history.pushState({ modal: 'upgrade' }, '', window.location.href);
-    
     setUltimatumType('upgrade');
     if (typeof window !== 'undefined' && (window as any).fbq) {
       (window as any).fbq('trackCustom', 'ABRIU-UPGRADE-MODAL', { origin: 'pricing' });
@@ -276,6 +275,13 @@ export default function App() {
     window.location.href = "https://pay.kiwify.com.br/CVZ4Q50";
   };
 
+  // 4. FUNÇÃO PARA PASSAR DE OFFER 1 (72,75) PARA OFFER 2 (37,00) NO DOWNSELL
+  const handleNextDownsellStep = () => {
+     setDownsellStep('offer2');
+     // Empurra mais um estado para segurar o usuário na oferta de R$ 37 se ele tentar voltar
+     window.history.pushState({ page: 'downsell-step-2' }, '', window.location.href);
+  };
+
   return (
     <>
       <PixelEvents />
@@ -293,7 +299,7 @@ export default function App() {
                  // Fechou o modal de exit intent -> Ativa a página de oferta 37
                  setUltimatumType(null);
                  setShowDownsellPage(true);
-                 setDownsellStep('offer2');
+                 setDownsellStep('offer1'); // Tenta a oferta de 72 primeiro
               } else {
                  setUltimatumType(null);
               }
@@ -309,12 +315,12 @@ export default function App() {
         </Suspense>
       )}
 
-      {/* PÁGINA DE DOWNSELL (R$ 37) - ATIVADA PELO BACK REDIRECT */}
+      {/* PÁGINA DE DOWNSELL - AGORA COM FLUXO: OFFER 1 (72) -> OFFER 2 (37) */}
       {showDownsellPage ? (
         <Suspense fallback={<PageLoader />}>
           <LastChance 
             step={downsellStep} 
-            onNextStep={() => setDownsellStep('offer2')} // Se tiver logica interna
+            onNextStep={handleNextDownsellStep} 
           />
         </Suspense>
       ) : (
