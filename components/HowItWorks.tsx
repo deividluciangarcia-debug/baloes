@@ -58,8 +58,21 @@ const HowItWorks: React.FC = () => {
                </span>
             </span>
           </h2>
-          <p className="text-slate-600 max-w-3xl mx-auto text-lg md:text-xl leading-relaxed font-medium">
-            Esqueça teorias complicadas. O método Balões Lucrativos é um sistema prático para você faturar <span className="bg-green-100 text-green-800 font-bold px-1 rounded border border-green-200">até R$ 5.000</span> trabalhando apenas nos finais de semana.
+          
+          {/* Parágrafo com Destaque Gigante Aumentado */}
+          <p className="text-slate-600 max-w-4xl mx-auto text-lg md:text-2xl leading-relaxed font-medium mt-8">
+            Esqueça teorias complicadas. O método Balões Lucrativos é um sistema prático para você faturar 
+            <br className="md:hidden" />
+            <span className="relative inline-block mx-2 my-2 transform hover:scale-105 transition-transform cursor-default group">
+                {/* Efeito Glow */}
+                <span className="absolute inset-0 bg-green-400 blur-lg opacity-40 group-hover:opacity-60 transition-opacity"></span>
+                <span className="relative z-10 bg-gradient-to-r from-emerald-600 to-green-500 text-white font-black text-2xl md:text-4xl px-4 py-1 rounded-xl shadow-xl border-2 border-green-400 flex items-center gap-2">
+                    <span className="text-yellow-300 animate-pulse text-lg md:text-2xl">⚡</span>
+                    até R$ 5.000
+                </span>
+            </span>
+            <br className="md:hidden" />
+            trabalhando apenas nos finais de semana.
           </p>
         </div>
 
@@ -107,60 +120,60 @@ const HowItWorks: React.FC = () => {
         </div>
 
         {/* --- NAVIGATION HUB (GANCHOS) --- */}
-        <div className="bg-emerald-950 rounded-3xl p-8 md:p-12 text-center relative overflow-hidden shadow-2xl border-4 border-emerald-900">
+        <div className="bg-emerald-950 rounded-3xl p-8 md:p-12 text-center relative overflow-hidden shadow-2xl border-4 border-emerald-900 transform hover:scale-[1.01] transition-transform duration-500">
             {/* Background Effects */}
             <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
             <div className="absolute -top-24 -right-24 w-64 h-64 bg-gold-500 rounded-full blur-[80px] opacity-20 animate-pulse"></div>
 
             <div className="relative z-10">
-                <h3 className="text-2xl md:text-3xl font-bold text-white mb-2 font-serif">
-                    Você entendeu como funciona?
+                <h3 className="text-2xl md:text-4xl font-black text-white mb-4 font-serif">
+                    O que você quer fazer agora?
                 </h3>
-                <p className="text-emerald-200 mb-10 text-lg">
-                    Agora escolha qual o seu próximo passo para mudar de vida:
+                <p className="text-emerald-200 mb-10 text-lg md:text-xl">
+                    Escolha seu próximo passo para a liberdade financeira:
                 </p>
 
-                <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+                <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
                     
                     {/* Option 1: Calculator */}
                     <button 
                         onClick={() => scrollTo('earnings-calculator')}
-                        className="group bg-white/5 hover:bg-white/10 border border-white/10 hover:border-emerald-400 p-6 rounded-2xl transition-all duration-300 flex flex-col items-center gap-3 backdrop-blur-sm"
+                        className="group bg-white/5 hover:bg-white/10 border border-white/20 hover:border-emerald-400 p-8 rounded-2xl transition-all duration-300 flex flex-col items-center gap-4 backdrop-blur-sm hover:shadow-[0_0_30px_rgba(16,185,129,0.2)]"
                     >
-                        <div className="bg-emerald-500/20 p-3 rounded-full text-emerald-300 group-hover:text-emerald-200 group-hover:bg-emerald-500 transition-colors">
-                            <Calculator className="w-8 h-8" />
+                        <div className="bg-emerald-500/20 p-4 rounded-full text-emerald-300 group-hover:text-emerald-950 group-hover:bg-emerald-400 transition-colors">
+                            <Calculator className="w-10 h-10" />
                         </div>
                         <div className="text-center">
-                            <span className="block text-white font-bold text-lg mb-1">Simular Ganhos</span>
-                            <span className="text-emerald-400 text-xs">Calcule quanto você pode lucrar</span>
+                            <span className="block text-white font-bold text-xl mb-1">Simular Ganhos</span>
+                            <span className="text-emerald-400 text-sm opacity-80 group-hover:opacity-100">Veja quanto vai faturar</span>
                         </div>
                     </button>
 
                     {/* Option 2: Free Class */}
                     <button 
                         onClick={() => scrollTo('free-preview')}
-                        className="group bg-white/5 hover:bg-white/10 border border-white/10 hover:border-red-400 p-6 rounded-2xl transition-all duration-300 flex flex-col items-center gap-3 backdrop-blur-sm"
+                        className="group bg-white/5 hover:bg-white/10 border border-white/20 hover:border-red-400 p-8 rounded-2xl transition-all duration-300 flex flex-col items-center gap-4 backdrop-blur-sm hover:shadow-[0_0_30px_rgba(248,113,113,0.2)]"
                     >
-                        <div className="bg-red-500/20 p-3 rounded-full text-red-300 group-hover:text-red-100 group-hover:bg-red-500 transition-colors">
-                            <Eye className="w-8 h-8" />
+                        <div className="bg-red-500/20 p-4 rounded-full text-red-300 group-hover:text-red-950 group-hover:bg-red-400 transition-colors">
+                            <Eye className="w-10 h-10" />
                         </div>
                         <div className="text-center">
-                            <span className="block text-white font-bold text-lg mb-1">Ver Aula Grátis</span>
-                            <span className="text-red-300 text-xs">Espie o curso por dentro</span>
+                            <span className="block text-white font-bold text-xl mb-1">Ver Aula Grátis</span>
+                            <span className="text-red-300 text-sm opacity-80 group-hover:opacity-100">Espie o curso por dentro</span>
                         </div>
                     </button>
 
                     {/* Option 3: Buy (Primary) */}
                     <button 
                         onClick={() => scrollTo('pricing')}
-                        className="group bg-gradient-to-br from-gold-500 to-yellow-600 hover:from-gold-400 hover:to-yellow-500 border border-gold-400 p-6 rounded-2xl transition-all duration-300 flex flex-col items-center gap-3 shadow-[0_0_20px_rgba(234,179,8,0.3)] transform hover:-translate-y-1"
+                        className="group bg-gradient-to-br from-gold-500 to-yellow-600 hover:from-white hover:to-white border border-gold-400 p-8 rounded-2xl transition-all duration-300 flex flex-col items-center gap-4 shadow-[0_0_20px_rgba(234,179,8,0.4)] transform hover:-translate-y-2"
                     >
-                        <div className="bg-white/20 p-3 rounded-full text-white group-hover:scale-110 transition-transform">
-                            <DollarSign className="w-8 h-8" />
+                        <div className="bg-white/20 p-4 rounded-full text-white group-hover:text-emerald-950 group-hover:scale-110 transition-all">
+                            <DollarSign className="w-10 h-10" />
                         </div>
                         <div className="text-center">
-                            <span className="block text-emerald-950 font-black text-lg mb-1">COMEÇAR AGORA</span>
-                            <span className="text-emerald-900 text-xs font-bold opacity-80">Quero minha vaga!</span>
+                            <span className="block text-emerald-950 font-black text-xl mb-1 group-hover:text-emerald-900">COMEÇAR AGORA</span>
+                            <span className="text-emerald-900 text-sm font-bold opacity-80 group-hover:opacity-100">Garantir minha vaga!</span>
                         </div>
                     </button>
 

@@ -6,31 +6,24 @@
     <meta name="description" content="Aprenda a faturar alto com decoração de balões. Curso completo Balões Lucrativos com certificado.">
     <title>Balões Lucrativos - Sua Nova Fonte de Renda</title>
     
-    <!-- FACEBOOK PIXEL CODE -->
+    <!-- GLOBAL ERROR HANDLER (Prevents White Screen of Death) -->
     <script>
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-      n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-      
-      fbq('init', '1011264807286508');
-      fbq('track', 'PageView');
-    </script>
-    <!-- END FACEBOOK PIXEL CODE -->
+      window.addEventListener('error', function(e) {
+        // Ignora erros de resizeObserver que são inofensivos
+        if (e.message === 'ResizeObserver loop limit exceeded') return;
 
-    <!-- UTMIFY TRACKING -->
-    <script
-      src="https://cdn.utmify.com.br/scripts/utms/latest.js"
-      data-utmify-prevent-xcod-sck
-      data-utmify-prevent-subids
-      async
-      defer
-    ></script>
-    <!-- END UTMIFY TRACKING -->
+        // Se for erro de carregamento de script (Bundle 404) ou erro crítico de JS
+        var isChunkError = e.message && (e.message.indexOf('Loading chunk') > -1 || e.message.indexOf('Importing a module script failed') > -1);
+        var is404 = e.target && (e.target.tagName === 'SCRIPT' || e.target.tagName === 'LINK');
+        
+        if (isChunkError || is404) {
+          var root = document.getElementById('root');
+          if (root) {
+            root.innerHTML = '<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#ecfdf5;font-family:sans-serif;text-align:center;padding:20px;"><div style="background:white;padding:30px;border-radius:15px;box-shadow:0 10px 25px rgba(0,0,0,0.1);max-width:400px;"><h2 style="color:#064e3b;margin-bottom:10px;">Atualização Necessária</h2><p style="color:#4b5563;margin-bottom:20px;">Uma nova versão do site está disponível. Por favor, recarregue a página.</p><button onclick="window.location.reload(true)" style="background:#059669;color:white;border:none;padding:12px 24px;border-radius:8px;font-weight:bold;cursor:pointer;width:100%;">Atualizar Agora</button></div></div>';
+          }
+        }
+      }, true); // Captura na fase de captura para pegar erros de recursos (404)
+    </script>
 
     <!-- OTIMIZAÇÃO DE PERFORMANCE -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -142,6 +135,32 @@
           background-position: 200% center;
         }
       }
+
+      /* Loader Inicial (CSS Puro) */
+      .initial-loader {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        width: 100%;
+        background-color: #ecfdf5;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 50;
+        transition: opacity 0.5s ease-out;
+      }
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #d1fae5;
+        border-top: 4px solid #059669;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 15px;
+      }
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
     <script type="importmap">
     {
@@ -158,13 +177,49 @@
     </script>
   </head>
   <body class="bg-emerald-50 text-slate-900 antialiased selection:bg-emerald-200 selection:text-emerald-900">
-    <!-- FIX: Moved noscript to body to allow img tag without breaking build -->
+    
+    <div id="root">
+       <!-- Conteúdo inicial enquanto React carrega -->
+       <div class="initial-loader">
+          <div class="spinner"></div>
+          <div style="color: #064e3b; font-family: sans-serif; font-size: 14px; letter-spacing: 1px; font-weight: 600;">
+             CARREGANDO OPORTUNIDADE...
+          </div>
+       </div>
+    </div>
+
+    <!-- MAIN APP SCRIPT -->
+    <script type="module" src="/index.tsx"></script>
+
+    <!-- TRACKING SCRIPTS (Movidos para o final para não bloquear renderização inicial) -->
+    
+    <!-- FACEBOOK PIXEL CODE -->
+    <script>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      
+      fbq('init', '1011264807286508');
+      fbq('track', 'PageView');
+    </script>
     <noscript>
       <img height="1" width="1" style="display:none" 
            src="https://www.facebook.com/tr?id=1011264807286508&ev=PageView&noscript=1"/>
     </noscript>
 
-    <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
+    <!-- UTMIFY TRACKING -->
+    <script
+      src="https://cdn.utmify.com.br/scripts/utms/latest.js"
+      data-utmify-prevent-xcod-sck
+      data-utmify-prevent-subids
+      async
+      defer
+    ></script>
+
   </body>
 </html>

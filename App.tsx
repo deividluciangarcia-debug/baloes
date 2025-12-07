@@ -52,16 +52,21 @@ export default function App() {
   // =========================================================================
   const [heroVariant] = useState<'green' | 'light'>(() => {
     // 1. Tenta recuperar a variante já atribuída a este usuário nesta sessão
-    if (typeof window !== 'undefined') {
-       const saved = sessionStorage.getItem('ab_hero_color') as 'green' | 'light';
-       if (saved) return saved;
-       
-       // 2. Se for novo visitante, sorteia 50/50
-       const random = Math.random() < 0.5 ? 'green' : 'light';
-       sessionStorage.setItem('ab_hero_color', random);
-       return random;
+    try {
+      if (typeof window !== 'undefined' && window.sessionStorage) {
+         const saved = sessionStorage.getItem('ab_hero_color') as 'green' | 'light';
+         if (saved) return saved;
+         
+         // 2. Se for novo visitante, sorteia 50/50
+         const random = Math.random() < 0.5 ? 'green' : 'light';
+         sessionStorage.setItem('ab_hero_color', random);
+         return random;
+      }
+    } catch (e) {
+      // Se cookies/storage estiverem bloqueados, fallback silencioso
+      console.warn("SessionStorage access blocked", e);
     }
-    return 'green'; // Fallback server-side
+    return 'green'; // Fallback server-side ou erro
   });
 
   const stateRef = useRef({ showDownsellPage, downsellStep });
