@@ -146,7 +146,7 @@ const ProductGallery: React.FC = () => {
 
   const trackNavigation = () => {
      if (typeof window !== 'undefined' && (window as any).fbq) {
-        (window as any).fbq('trackCustom', 'Interaction_Gallery_Swipe', {
+        (window as any).fbq('trackCustom', 'NAVEGOU-GALERIA', {
           content_name: 'Browse Product Gallery'
         });
      }

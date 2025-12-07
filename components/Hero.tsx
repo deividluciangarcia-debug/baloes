@@ -10,21 +10,20 @@ interface HeroProps {
 const Hero: React.FC<HeroProps> = ({ onCtaClick, onLearnMoreClick, spotsLeft }) => {
   
   const handleCtaClick = () => {
-    // Rastreamento Específico
+    // Rastreamento Personalizado
     if (typeof window !== 'undefined' && (window as any).fbq) {
-      (window as any).fbq('trackCustom', 'Click_Hero_CTA', {
-        content_name: 'Hero Section Main Button',
-        content_category: 'Lead Interest'
+      (window as any).fbq('trackCustom', 'BTN-ATIVAR-RENDA', {
+        local: 'Hero Section'
       });
     }
     onCtaClick();
   };
 
   const handleLearnMoreClick = () => {
-    // Rastreamento Específico
+    // Rastreamento Personalizado
     if (typeof window !== 'undefined' && (window as any).fbq) {
-      (window as any).fbq('trackCustom', 'Click_Hero_LearnMore', {
-        content_name: 'Hero Section Learn More'
+      (window as any).fbq('trackCustom', 'BTN-VER-FUNCIONA', {
+        local: 'Hero Section'
       });
     }
     onLearnMoreClick();

@@ -215,8 +215,8 @@ export default function App() {
   const handleMobileCtaClick = () => {
     // Rastreamento Específico Mobile
     if (typeof window !== 'undefined' && (window as any).fbq) {
-      (window as any).fbq('trackCustom', 'Click_Mobile_Sticky', {
-        content_name: 'Mobile Floating Bar CTA'
+      (window as any).fbq('trackCustom', 'BTN-MOBILE-FLUTUANTE', {
+        local: 'Barra Fixa Inferior'
       });
     }
     scrollToSection('pricing');

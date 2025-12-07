@@ -43,7 +43,12 @@ const LastChance: React.FC<LastChanceProps> = ({ step, onNextStep }) => {
   const progressPercentage = (timeLeft / 180) * 100;
 
   const handleAcceptOffer1 = () => {
-    // Rastreamento Downsell 1
+    // Rastreamento Personalizado
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('trackCustom', 'BTN-COMPRAR-DOWNSELL-1');
+    }
+
+    // Rastreamento Padrão
     if (typeof window !== 'undefined' && (window as any).fbq) {
       (window as any).fbq('track', 'InitiateCheckout', {
         content_name: 'Downsell 01 - R$72.75',
@@ -60,14 +65,20 @@ const LastChance: React.FC<LastChanceProps> = ({ step, onNextStep }) => {
   };
 
   const handleRejectOffer1 = () => {
+    // Rastreamento Personalizado
     if (typeof window !== 'undefined' && (window as any).fbq) {
-      (window as any).fbq('trackCustom', 'Reject_Downsell_1');
+      (window as any).fbq('trackCustom', 'BTN-RECUSAR-OFERTA');
     }
     onNextStep();
   };
 
   const handleAcceptOffer2 = () => {
-    // Rastreamento Downsell 2
+    // Rastreamento Personalizado
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('trackCustom', 'BTN-COMPRAR-DOWNSELL-2');
+    }
+
+    // Rastreamento Padrão
     if (typeof window !== 'undefined' && (window as any).fbq) {
       (window as any).fbq('track', 'InitiateCheckout', {
         content_name: 'Downsell 02 (Final) - R$37.00',

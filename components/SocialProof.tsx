@@ -10,7 +10,7 @@ const optimizeImage = (url: string, width = 100) => {
 };
 
 // Componente Interno de Player de Voz (Estilo WhatsApp)
-const VoicePlayer: React.FC<{ audioUrl: string; duration?: string; handle?: string }> = ({ audioUrl, duration = "0:45", handle }) => {
+const VoicePlayer: React.FC<{ audioUrl: string; duration?: string; trackingName: string }> = ({ audioUrl, duration = "0:45", trackingName }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false); // isReady = true significa que o elemento <audio> foi montado
   const [progress, setProgress] = useState(0);
@@ -20,12 +20,12 @@ const VoicePlayer: React.FC<{ audioUrl: string; duration?: string; handle?: stri
   const togglePlay = () => {
     // Primeira vez clicando: monta o componente de audio e inicia o load
     if (!isReady) {
-        // RASTREAMENTO DO PIXEL
+        // RASTREAMENTO DO PIXEL PERSONALIZADO
         if (typeof window !== 'undefined' && (window as any).fbq) {
-           (window as any).fbq('trackCustom', 'Interaction_Audio_Play', {
-              content_name: `Depoimento de ${handle}`,
-              content_category: 'Social Proof'
+           (window as any).fbq('trackCustom', trackingName, {
+              content_category: 'Prova Social'
            });
+           console.log(`[Pixel] Áudio Play: ${trackingName}`);
         }
         setIsLoading(true);
         setIsReady(true);
@@ -235,10 +235,14 @@ const SocialProof: React.FC = () => {
                 🚀 {t.highlight}
               </div>
 
-              {/* Player de Áudio Otimizado */}
+              {/* Player de Áudio Otimizado com Nome de Rastreamento Dinâmico */}
               {t.audio && (
                 <div className="w-full mt-auto">
-                  <VoicePlayer audioUrl={t.audio} duration={t.audioDuration} handle={t.handle} />
+                  <VoicePlayer 
+                    audioUrl={t.audio} 
+                    duration={t.audioDuration} 
+                    trackingName={`PLAY-AUDIO-${idx + 1}`} 
+                  />
                   <p className="text-xs text-center text-red-700 mt-3 font-bold">
                      🔊 Ouça o áudio real do depoimento:
                   </p>

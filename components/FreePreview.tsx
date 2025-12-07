@@ -5,18 +5,17 @@ interface FreePreviewProps {
   onCtaClick: () => void;
 }
 
-const VideoFacade = ({ videoId, title }: { videoId: string, title: string }) => {
+const VideoFacade = ({ videoId, title, trackingName }: { videoId: string, title: string, trackingName: string }) => {
   const [showVideo, setShowVideo] = useState(false);
 
   const handlePlayClick = () => {
-    // Rastreamento de Play de Vídeo
+    // Rastreamento Personalizado
     if (typeof window !== 'undefined' && (window as any).fbq) {
-      (window as any).fbq('trackCustom', 'Play_Video_Aula', {
+      (window as any).fbq('trackCustom', trackingName, {
         content_name: title,
-        content_id: videoId,
         content_category: 'Free Preview'
       });
-      console.log(`[Pixel] Vídeo Play: ${title}`);
+      console.log(`[Pixel] Vídeo Play: ${trackingName}`);
     }
     setShowVideo(true);
   };
@@ -60,9 +59,9 @@ const VideoFacade = ({ videoId, title }: { videoId: string, title: string }) => 
 
 const FreePreview: React.FC<FreePreviewProps> = ({ onCtaClick }) => {
   const handleUnlockClick = () => {
-    // Rastreamento de Intenção de Desbloqueio (Forte sinal de compra)
+    // Rastreamento Personalizado
     if (typeof window !== 'undefined' && (window as any).fbq) {
-      (window as any).fbq('trackCustom', 'Click_Unlock_Upsell', {
+      (window as any).fbq('trackCustom', 'BTN-DESBLOQUEAR-AULAS', {
         content_name: 'Desbloquear Metodo Completo'
       });
     }
@@ -98,7 +97,7 @@ const FreePreview: React.FC<FreePreviewProps> = ({ onCtaClick }) => {
               <span className="text-xs text-slate-400 font-medium">01:42</span>
             </div>
             
-            <VideoFacade videoId="xY2kwqcWFQ0" title="Aula Balões Bubbles" />
+            <VideoFacade videoId="xY2kwqcWFQ0" title="Aula Balões Bubbles" trackingName="PLAY-AULA-1" />
 
             <h3 className="font-bold text-emerald-950 mt-4 text-lg leading-tight">
               Balões Bubbles Personalizados
@@ -115,7 +114,7 @@ const FreePreview: React.FC<FreePreviewProps> = ({ onCtaClick }) => {
               <span className="text-xs text-slate-400 font-medium">03:33</span>
             </div>
             
-            <VideoFacade videoId="rUj_-HgbEDA" title="O Segredo da Fidelização" />
+            <VideoFacade videoId="rUj_-HgbEDA" title="O Segredo da Fidelização" trackingName="PLAY-AULA-2" />
 
             <h3 className="font-bold text-emerald-950 mt-4 text-lg leading-tight">
               O Segredo da Fidelização

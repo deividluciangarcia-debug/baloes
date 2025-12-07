@@ -12,7 +12,12 @@ const Pricing: React.FC<PricingProps> = ({ onCtaClick, spotsLeft }) => {
   const formattedDate = today.toLocaleDateString('pt-BR');
 
   const handleCheckout = () => {
-    // Rastreamento de Início de Checkout (O evento mais importante)
+    // Rastreamento Personalizado (Visual para você)
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('trackCustom', 'BTN-COMPRAR-PRINCIPAL');
+    }
+
+    // Rastreamento Padrão (Otimização do Algoritmo)
     if (typeof window !== 'undefined' && (window as any).fbq) {
       (window as any).fbq('track', 'InitiateCheckout', {
         content_name: 'Curso Baloes Lucrativos - Oferta Principal',

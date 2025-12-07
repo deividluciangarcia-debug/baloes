@@ -7,9 +7,9 @@ interface OptionsComparisonProps {
 
 const OptionsComparison: React.FC<OptionsComparisonProps> = ({ onCtaClick }) => {
   const handleSuccessClick = () => {
+    // Rastreamento Personalizado
     if (typeof window !== 'undefined' && (window as any).fbq) {
-        (window as any).fbq('trackCustom', 'Click_Option_Success', {
-          content_name: 'Escolheu o Sucesso (Comparativo)',
+        (window as any).fbq('trackCustom', 'BTN-ESCOLHER-SUCESSO', {
           status: 'High Intent'
         });
     }
