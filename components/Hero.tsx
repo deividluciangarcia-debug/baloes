@@ -11,11 +11,21 @@ interface HeroProps {
 const Hero: React.FC<HeroProps> = ({ onCtaClick, onLearnMoreClick, spotsLeft, variant = 'green' }) => {
   
   const handleCtaClick = () => {
-    // Rastreamento de conversão segmentado por variante (Verde vs Clara)
+    // 1. Rastreamento Personalizado (Para sua análise interna)
     if (typeof window !== 'undefined' && (window as any).fbq) {
       (window as any).fbq('trackCustom', 'BTN-ATIVAR-RENDA', {
         local: 'Hero Section',
         variant: variant 
+      });
+
+      // 2. Rastreamento PADRÃO (AddToCart) - PARA OTIMIZAÇÃO DE CAMPANHA
+      // Isso permite que você selecione "Adicionar ao Carrinho" como objetivo de conversão no Meta Ads
+      (window as any).fbq('track', 'AddToCart', {
+        content_name: 'Botão Hero - Ativar Renda',
+        content_type: 'product',
+        value: 97.00, // Valor percebido da ação
+        currency: 'BRL',
+        variant: variant
       });
     }
     onCtaClick();
