@@ -45,6 +45,23 @@ export default function App() {
   const [hasShownExitIntent, setHasShownExitIntent] = useState(false);
   const [showDownsellPage, setShowDownsellPage] = useState(false);
   const [downsellStep, setDownsellStep] = useState<'offer1' | 'offer2'>('offer1');
+  
+  // =========================================================================
+  // LÓGICA DO TESTE A/B DE CORES (PRODUÇÃO - 50/50 SPLIT)
+  // =========================================================================
+  const [heroVariant] = useState<'green' | 'light'>(() => {
+    // 1. Tenta recuperar a variante já atribuída a este usuário nesta sessão
+    if (typeof window !== 'undefined') {
+       const saved = sessionStorage.getItem('ab_hero_color') as 'green' | 'light';
+       if (saved) return saved;
+       
+       // 2. Se for novo visitante, sorteia 50/50
+       const random = Math.random() < 0.5 ? 'green' : 'light';
+       sessionStorage.setItem('ab_hero_color', random);
+       return random;
+    }
+    return 'green'; // Fallback server-side
+  });
 
   const stateRef = useRef({ showDownsellPage, downsellStep });
   const historyPushedRef = useRef(false);
@@ -54,6 +71,22 @@ export default function App() {
   useEffect(() => {
     stateRef.current = { showDownsellPage, downsellStep };
   }, [showDownsellPage, downsellStep]);
+
+  // =========================================================================
+  // PIXEL TRACKING DO TESTE A/B
+  // =========================================================================
+  useEffect(() => {
+    // Dispara o Pixel Personalizado baseado na variante ativa (PV-VERDE ou PV-CLARA)
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      const eventName = heroVariant === 'green' ? 'PV-VERDE' : 'PV-CLARA';
+      (window as any).fbq('trackCustom', eventName, {
+        teste: 'Teste AB Cores Hero',
+        variant: heroVariant
+      });
+      // Console log discreto para verificação técnica, se necessário
+      // console.log(`[Teste A/B] Variante: ${heroVariant}`);
+    }
+  }, [heroVariant]);
 
   // =========================================================================
   // LÓGICA DE BACK REDIRECT
@@ -223,14 +256,14 @@ export default function App() {
     // Rastreamento Específico Mobile
     if (typeof window !== 'undefined' && (window as any).fbq) {
       (window as any).fbq('trackCustom', 'BTN-MOBILE-FLUTUANTE', {
-        local: 'Barra Fixa Inferior'
+        local: 'Barra Fixa Inferior',
+        variant: heroVariant
       });
     }
     scrollToSection('pricing');
   };
 
   // RENDERIZAÇÃO PRINCIPAL
-  // PixelEvents foi movido para fora das condicionais para garantir persistência do timer
   return (
     <>
       <PixelEvents />
@@ -302,7 +335,8 @@ export default function App() {
           <Hero 
             onCtaClick={() => scrollToSection('pricing')} 
             onLearnMoreClick={() => scrollToSection('program-details')}
-            spotsLeft={spotsLeft} 
+            spotsLeft={spotsLeft}
+            variant={heroVariant} // Passando a variante do teste A/B para renderização e rastreamento
           />
           
           <Suspense fallback={<SectionLoader />}>
