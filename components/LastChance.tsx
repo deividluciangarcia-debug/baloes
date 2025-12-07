@@ -1,25 +1,89 @@
 import React, { useState, useEffect } from 'react';
-import { Timer, ArrowRight, Star, ShieldCheck, CheckCircle2, AlertCircle, XCircle, Gift } from 'lucide-react';
+import { Timer, ArrowRight, Star, CheckCircle2, AlertCircle, XCircle, Gift, Lock, ShieldCheck, Users } from 'lucide-react';
 
 interface LastChanceProps {
   step: 'offer1' | 'offer2';
   onNextStep: () => void;
 }
 
+// --- NOVO COMPONENTE: MÁSCARA DE SEGURANÇA/INTERAÇÃO ---
+const SecurityMask = ({ onUnlock }: { onUnlock: () => void }) => {
+  return (
+    <div className="fixed inset-0 z-[100] bg-emerald-950/95 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-500">
+      <div className="bg-white rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl border-b-4 border-emerald-600 relative overflow-hidden">
+        
+        {/* Top Icon */}
+        <div className="mx-auto mb-4 bg-emerald-100 w-16 h-16 rounded-full flex items-center justify-center shadow-inner">
+           <Users className="w-8 h-8 text-emerald-600" />
+        </div>
+
+        <h2 className="text-xl font-black text-emerald-950 mb-2 uppercase tracking-wide">
+          Alta Demanda Identificada
+        </h2>
+        
+        <p className="text-slate-600 mb-6 text-sm leading-relaxed">
+          Muitas pessoas estão acessando esta página simultaneamente. Reservamos uma vaga prioritária para você.
+        </p>
+
+        {/* Status Check Fake */}
+        <div className="bg-slate-50 rounded-lg p-3 mb-6 text-xs text-left border border-slate-100">
+             <div className="flex items-center gap-2 mb-1 text-emerald-700 font-bold">
+                 <CheckCircle2 className="w-3 h-3" /> Conexão Segura
+             </div>
+             <div className="flex items-center gap-2 text-emerald-700 font-bold">
+                 <CheckCircle2 className="w-3 h-3" /> Vaga Disponível
+             </div>
+        </div>
+
+        <button 
+          onClick={onUnlock}
+          className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base py-3.5 rounded-xl shadow-lg transform active:scale-95 transition-all flex items-center justify-center gap-2"
+        >
+          <ShieldCheck className="w-4 h-4" />
+          VISUALIZAR OPORTUNIDADE
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const LastChance: React.FC<LastChanceProps> = ({ step, onNextStep }) => {
   const [timeLeft, setTimeLeft] = useState(180);
   const [isActive, setIsActive] = useState(true);
+  
+  // Estado para controlar a máscara de interação na oferta 1
+  const [showSecurityMask, setShowSecurityMask] = useState(false);
 
   // Reinicia o timer e configurações quando muda de etapa
   useEffect(() => {
     if (step === 'offer1') {
         setTimeLeft(180); // 3 minutos para primeira oferta
         setIsActive(true);
+        // Ativa a máscara de segurança ao entrar na oferta 1
+        setShowSecurityMask(true);
     } else if (step === 'offer2') {
         setTimeLeft(120); // 2 minutos para oferta final
         setIsActive(true);
+        setShowSecurityMask(false);
     }
   }, [step]);
+
+  // Handler para desbloquear e GARANTIR O PUSH STATE para o botão voltar funcionar
+  const handleUnlockSecurity = () => {
+     // CRÍTICO: Empurra um novo estado no histórico.
+     // Assim, quando o usuário clicar em "Voltar", ele cairá no listener de 'popstate' do App.tsx
+     // que vai detectar que estamos na offer1 e redirecionar para offer2.
+     window.history.pushState({ page: 'downsell-view-unlocked' }, '', window.location.href);
+     
+     setShowSecurityMask(false);
+     
+     // Som sutil de sucesso (opcional)
+     try {
+       const audio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=pop-39222.mp3");
+       audio.volume = 0.1;
+       audio.play().catch(() => {});
+     } catch (e) {}
+  };
 
   useEffect(() => {
     if (!isActive || timeLeft <= 0) return;
@@ -75,7 +139,13 @@ const LastChance: React.FC<LastChanceProps> = ({ step, onNextStep }) => {
   };
 
   return (
-    <section className="bg-emerald-50 min-h-screen md:min-h-0 flex flex-col justify-center py-4 md:py-20 relative overflow-hidden">
+    <>
+    {/* Máscara de Interação Obrigatória (Apenas no Step 1) */}
+    {step === 'offer1' && showSecurityMask && (
+        <SecurityMask onUnlock={handleUnlockSecurity} />
+    )}
+
+    <section className={`bg-emerald-50 min-h-screen md:min-h-0 flex flex-col justify-center py-4 md:py-20 relative overflow-hidden transition-all duration-500 ${showSecurityMask ? 'blur-sm h-screen overflow-hidden' : ''}`}>
       
       {/* Background Decor Universal */}
       <div className="absolute top-0 left-0 w-full h-full bg-emerald-950 opacity-100 z-0"></div>
@@ -289,6 +359,7 @@ const LastChance: React.FC<LastChanceProps> = ({ step, onNextStep }) => {
 
       </div>
     </section>
+    </>
   );
 };
 

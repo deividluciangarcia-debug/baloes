@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import Hero from './components/Hero';
-import { Timer, Eye, Loader2, DollarSign, Lock, Unlock } from 'lucide-react';
+import { Timer, Eye, Loader2, DollarSign } from 'lucide-react';
 import PixelEvents from './components/PixelEvents';
 
 // Eager load critical components
@@ -36,42 +36,6 @@ const SectionLoader = () => (
   </div>
 );
 
-// --- NOVO COMPONENTE: OVERLAY DE ENTRADA ---
-// Força o clique para garantir que o Back Redirect funcione
-const EntryMask = ({ onUnlock }: { onUnlock: () => void }) => {
-  return (
-    <div className="fixed inset-0 z-[100] bg-emerald-950/90 backdrop-blur-xl flex items-center justify-center p-4 animate-in fade-in duration-700">
-      <div className="bg-white rounded-2xl max-w-md w-full p-8 text-center shadow-2xl border-4 border-gold-500 relative overflow-hidden">
-        {/* Efeito de brilho fundo */}
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold-400 to-transparent opacity-50"></div>
-        
-        <div className="bg-emerald-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-emerald-50 shadow-inner">
-           <Lock className="w-10 h-10 text-emerald-600" />
-        </div>
-        
-        <h2 className="text-2xl font-black text-emerald-950 mb-2 uppercase tracking-tight">
-          Oportunidade Reservada
-        </h2>
-        <p className="text-slate-600 mb-8 leading-relaxed">
-          Identificamos uma condição especial para o seu perfil. Libere o acesso para visualizar a oferta exclusiva.
-        </p>
-
-        <button 
-          onClick={onUnlock}
-          className="w-full bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-black text-lg py-4 rounded-xl shadow-[0_10px_20px_-5px_rgba(5,150,105,0.4)] transform hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 animate-pulse-slow group"
-        >
-          <Unlock className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-          LIBERAR ACESSO AGORA
-        </button>
-        
-        <p className="mt-4 text-[10px] text-slate-400 uppercase tracking-widest flex items-center justify-center gap-1">
-          <Lock className="w-3 h-3" /> Ambiente Seguro
-        </p>
-      </div>
-    </div>
-  );
-};
-
 export default function App() {
   const [spotsLeft, setSpotsLeft] = useState(27); 
   const [showMobileCta, setShowMobileCta] = useState(false);
@@ -82,9 +46,6 @@ export default function App() {
   const [showDownsellPage, setShowDownsellPage] = useState(false);
   const [downsellStep, setDownsellStep] = useState<'offer1' | 'offer2'>('offer1');
   
-  // Estado para o Overlay de Entrada (Force Click)
-  const [showEntryMask, setShowEntryMask] = useState(true);
-
   // Refs para estado sempre atualizado dentro dos Event Listeners
   const showDownsellPageRef = useRef(showDownsellPage);
   const downsellStepRef = useRef(downsellStep); 
@@ -133,25 +94,16 @@ export default function App() {
     if (!hasHistoryPushedRef.current) {
         window.history.pushState({ page: 'home' }, '', window.location.href);
         hasHistoryPushedRef.current = true;
-        // console.log("History State Pushed (Back Redirect Ativado)");
     }
   };
 
-  // Handler para desbloquear a tela e ativar o Back Redirect
-  const handleUnlockEntry = () => {
-    pushHistoryState(); // ATIVA O BACK REDIRECT NO CLIQUE
-    setShowEntryMask(false);
-    
-    // Toca um som sutil de sucesso/desbloqueio (opcional)
-    try {
-      const audio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=pop-39222.mp3"); // Som curto de "pop"
-      audio.volume = 0.1;
-      audio.play().catch(() => {});
-    } catch (e) {}
-  };
-
   useEffect(() => {
-    // 1. FALLBACK DE SCROLL: Se o usuário rolar a página, tenta ativar o redirect também
+    // 1. GATILHO SILENCIOSO: Ao carregar, tenta injetar histórico na primeira interação
+    const handleInteraction = () => {
+        pushHistoryState();
+    };
+    
+    // 2. GATILHO DE SCROLL: Se o usuário rolar a página, ativa o redirect
     const handleScrollInteraction = () => {
         if (window.scrollY > 50) {
             pushHistoryState();
@@ -160,9 +112,12 @@ export default function App() {
         }
     };
 
+    window.addEventListener('mouseover', handleInteraction, { once: true });
+    window.addEventListener('click', handleInteraction, { once: true });
+    window.addEventListener('touchstart', handleInteraction, { once: true });
     window.addEventListener('scroll', handleScrollInteraction);
 
-    // 2. Manipula o evento de "Voltar"
+    // 3. Manipula o evento de "Voltar"
     const handlePopState = (event: PopStateEvent) => {
         // LÓGICA 1: Se o modal de upgrade OU EXIT INTENT estiver aberto e clicar voltar
         if (ultimatumTypeRef.current === 'upgrade' || ultimatumTypeRef.current === 'exit') {
@@ -179,6 +134,8 @@ export default function App() {
         }
 
         // LÓGICA 2: Se já estiver na Oferta 1 (72,75) e clicar voltar -> IR PARA OFERTA 2 (37,00)
+        // OBS: A página LastChance agora tem um "SecurityMask" que força um clique.
+        // Esse clique lá dentro vai garantir que um novo estado seja empurrado.
         if (showDownsellPageRef.current && downsellStepRef.current === 'offer1') {
             event.preventDefault();
             setDownsellStep('offer2');
@@ -212,6 +169,9 @@ export default function App() {
     window.addEventListener('popstate', handlePopState);
 
     return () => {
+        window.removeEventListener('mouseover', handleInteraction);
+        window.removeEventListener('click', handleInteraction);
+        window.removeEventListener('touchstart', handleInteraction);
         window.removeEventListener('scroll', handleScrollInteraction);
         window.removeEventListener('popstate', handlePopState);
     };
@@ -258,9 +218,9 @@ export default function App() {
   useEffect(() => {
     const handleExitIntent = (e: MouseEvent) => {
       // Só ativa se não estiver no downsell, não tiver mostrado modal e tiver vagas
-      if (e.clientY < 10 && !hasShownExitIntent && spotsLeft > 0 && !showDownsellPage && !ultimatumType && !showEntryMask) {
-        // MODIFICADO: Empurra o estado 'exit' no histórico para que o botão voltar funcione
-        pushHistoryState(); // Garante o push aqui também
+      if (e.clientY < 10 && !hasShownExitIntent && spotsLeft > 0 && !showDownsellPage && !ultimatumType) {
+        // Empurra o estado 'exit' no histórico para que o botão voltar funcione
+        pushHistoryState(); 
         window.history.pushState({ modal: 'exit' }, '', window.location.href);
         
         setUltimatumType('exit');
@@ -270,7 +230,7 @@ export default function App() {
     };
     document.addEventListener('mouseleave', handleExitIntent);
     return () => document.removeEventListener('mouseleave', handleExitIntent);
-  }, [hasShownExitIntent, spotsLeft, showDownsellPage, ultimatumType, showEntryMask]);
+  }, [hasShownExitIntent, spotsLeft, showDownsellPage, ultimatumType]);
 
   // Observer para esconder barras flutuantes
   useEffect(() => {
@@ -359,12 +319,6 @@ export default function App() {
   return (
     <>
       <PixelEvents />
-      
-      {/* OVERLAY DE ENTRADA (FORÇA O CLIQUE PARA ATIVAR O BACK REDIRECT) */}
-      {showEntryMask && !showDownsellPage && (
-        <EntryMask onUnlock={handleUnlockEntry} />
-      )}
-
       <Suspense fallback={null}><SalesNotifications /></Suspense>
 
       {/* MODAL GERAL (Exit Intent, Upgrade, Scarcity) */}
@@ -405,7 +359,7 @@ export default function App() {
         </Suspense>
       ) : (
         // PÁGINA PRINCIPAL
-        <div className={`min-h-screen flex flex-col font-sans relative bg-emerald-50 text-slate-900 ${showEntryMask ? 'overflow-hidden h-screen blur-sm' : ''}`}>
+        <div className="min-h-screen flex flex-col font-sans relative bg-emerald-50 text-slate-900">
           
           <div className={`${getStickyBarColor()} text-white py-2 px-2 md:px-4 text-center text-[10px] md:text-sm font-semibold sticky top-0 z-50 shadow-xl flex flex-col md:flex-row justify-center items-center md:gap-6 gap-1 border-b border-white/10 transition-transform duration-500 ${hideStickyBars ? '-translate-y-full' : 'translate-y-0'}`}>
             <div className="flex items-center gap-2 drop-shadow-sm">
