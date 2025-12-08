@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, CheckCircle2, Zap, Lock, Star, Award, Download } from 'lucide-react';
+import { ShieldCheck, CheckCircle2, Zap, Lock, Star, Award, Download, Image as ImageIcon, Mail, Bell } from 'lucide-react';
 import html2canvas from 'html2canvas';
 
 const CheckoutBanner: React.FC = () => {
@@ -26,18 +26,113 @@ const CheckoutBanner: React.FC = () => {
     }
   };
 
+  const covers = [
+    {
+      id: 'cover-main',
+      title: 'Balões',
+      highlight: 'Lucrativos',
+      sub: 'MÉTODO OFICIAL',
+      bgClass: 'bg-emerald-950',
+      textClass: 'text-white',
+      accentClass: 'text-gold-500',
+      borderClass: 'border-gold-500'
+    },
+    {
+      id: 'cover-bonus1',
+      title: 'Arranjo',
+      highlight: 'Floral',
+      sub: 'CURSO BÔNUS',
+      bgClass: 'bg-emerald-900',
+      textClass: 'text-white',
+      accentClass: 'text-emerald-200',
+      borderClass: 'border-emerald-700'
+    },
+    {
+      id: 'cover-bonus2',
+      title: 'Embalagens',
+      highlight: 'Criativas',
+      sub: 'CURSO BÔNUS',
+      bgClass: 'bg-emerald-800',
+      textClass: 'text-white',
+      accentClass: 'text-gold-300',
+      borderClass: 'border-gold-500'
+    },
+    {
+      id: 'cover-bonus3',
+      title: 'Caixa',
+      highlight: 'Floral',
+      sub: 'CURSO BÔNUS',
+      bgClass: 'bg-emerald-900',
+      textClass: 'text-white',
+      accentClass: 'text-emerald-200',
+      borderClass: 'border-emerald-700'
+    }
+  ];
+
   return (
     <section className="py-20 bg-gray-200 overflow-x-auto">
       <div className="container mx-auto px-4 flex flex-col items-center gap-16">
         
         <div className="text-center">
           <h2 className="text-2xl font-bold text-slate-700 uppercase tracking-widest border-b-4 border-slate-300 inline-block pb-2">
-            Área de Banners para Checkout
+            Área de Materiais & Banners
           </h2>
           <p className="text-base text-slate-500 mt-2 max-w-2xl mx-auto">
-            Abaixo estão os banners nas medidas exatas. Clique no botão azul para baixar a versão em Alta Definição (PNG).
+            Clique nos botões azuis para baixar as imagens em Alta Definição (PNG).
           </p>
         </div>
+
+        {/* ==========================================
+            NOVAS CAPAS DOS CURSOS (300x250px)
+           ========================================== */}
+        <div className="w-full max-w-6xl">
+           <div className="flex items-center justify-center gap-2 mb-8">
+               <ImageIcon className="w-6 h-6 text-slate-600" />
+               <h3 className="text-xl font-bold text-slate-700 uppercase">Capas dos Cursos (300x250 px)</h3>
+           </div>
+
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 justify-items-center">
+              {covers.map((cover) => (
+                <div key={cover.id} className="flex flex-col gap-3 items-center">
+                    {/* A CAPA EM SI */}
+                    <div 
+                      id={cover.id}
+                      style={{ width: '300px', height: '250px' }}
+                      className={`${cover.bgClass} relative flex flex-col justify-center items-center text-center p-6 border-4 ${cover.borderClass} shadow-2xl overflow-hidden flex-shrink-0`}
+                    >
+                        {/* Pattern Background */}
+                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full blur-[60px] opacity-10"></div>
+
+                        <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                            <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-white/60 mb-2 border-b border-white/20 pb-1">
+                                {cover.sub}
+                            </span>
+                            <h2 className={`font-serif font-bold text-4xl leading-none ${cover.textClass} drop-shadow-lg`}>
+                                {cover.title}
+                            </h2>
+                            <h2 className={`font-serif font-bold text-4xl leading-none ${cover.accentClass} drop-shadow-lg mt-1`}>
+                                {cover.highlight}
+                            </h2>
+                            
+                            {/* Decorative Line */}
+                            <div className="w-12 h-1 bg-white/20 rounded-full mt-4"></div>
+                        </div>
+                    </div>
+
+                    {/* Botão de Download */}
+                    <button 
+                      onClick={() => handleDownload(cover.id, `capa_${cover.title.toLowerCase()}_${cover.highlight.toLowerCase()}.png`)}
+                      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors shadow-md w-full justify-center"
+                    >
+                      <Download className="w-4 h-4" /> Baixar Capa
+                    </button>
+                </div>
+              ))}
+           </div>
+        </div>
+
+        <div className="w-full h-px bg-slate-300 my-4"></div>
 
         {/* ==========================================
             DESKTOP BANNER (2000x590px)
@@ -45,13 +140,13 @@ const CheckoutBanner: React.FC = () => {
         <div className="flex flex-col items-center gap-4">
             <div className="flex items-center gap-4">
                  <span className="bg-slate-700 text-white px-4 py-1 rounded-full text-sm font-bold uppercase tracking-wider">
-                    Versão Desktop (2000 x 590 px)
+                    Banner Checkout Desktop (2000 x 590 px)
                  </span>
                  <button 
                     onClick={() => handleDownload('banner-desktop', 'banner_checkout_desktop.png')}
                     className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-full text-sm font-bold transition-colors shadow-lg"
                  >
-                    <Download className="w-4 h-4" /> Baixar PNG em Alta Definição (HD)
+                    <Download className="w-4 h-4" /> Baixar PNG
                  </button>
             </div>
             
@@ -144,6 +239,71 @@ const CheckoutBanner: React.FC = () => {
             </div>
         </div>
 
+        {/* ==========================================
+            EMAIL ACCESS BANNER - DESKTOP (2000x590px)
+           ========================================== */}
+        <div className="flex flex-col items-center gap-4 mt-8">
+            <div className="flex items-center gap-4">
+                 <span className="bg-emerald-800 text-white px-4 py-1 rounded-full text-sm font-bold uppercase tracking-wider">
+                    Banner Aviso E-mail Desktop (2000 x 590 px)
+                 </span>
+                 <button 
+                    onClick={() => handleDownload('banner-email-desktop', 'banner_email_desktop.png')}
+                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-full text-sm font-bold transition-colors shadow-lg"
+                 >
+                    <Download className="w-4 h-4" /> Baixar PNG
+                 </button>
+            </div>
+
+            <div 
+                id="banner-email-desktop"
+                style={{ width: '2000px', height: '590px' }}
+                className="bg-slate-50 relative flex items-center justify-between shadow-lg overflow-hidden font-sans border border-slate-200 flex-shrink-0 selection:bg-none border-l-[30px] border-l-emerald-500"
+            >
+                {/* Background Pattern */}
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
+                <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-emerald-50 to-transparent"></div>
+
+                {/* Content Container */}
+                <div className="flex w-full items-center px-24 py-16 gap-20 relative z-10">
+                    
+                    {/* Icon Area */}
+                    <div className="bg-white p-12 rounded-[3rem] shadow-xl border-4 border-emerald-100 flex items-center justify-center relative">
+                        <Mail className="w-40 h-40 text-emerald-600" />
+                        {/* Notification Dot */}
+                        <div className="absolute -top-4 -right-4 bg-red-500 w-16 h-16 rounded-full border-8 border-slate-50 flex items-center justify-center shadow-lg">
+                            <Bell className="w-8 h-8 text-white fill-white animate-bounce" />
+                        </div>
+                    </div>
+
+                    {/* Text Area */}
+                    <div className="flex-1">
+                        <div className="inline-flex items-center gap-3 bg-emerald-100 text-emerald-800 px-6 py-2 rounded-full text-xl font-black uppercase tracking-widest mb-6">
+                            <Zap className="w-6 h-6 fill-emerald-800" />
+                            Liberação Imediata
+                        </div>
+                        
+                        <h2 className="text-8xl font-black text-slate-800 leading-tight tracking-tight mb-8">
+                            Seu acesso chegará<br/>
+                            <span className="text-emerald-600">no seu E-mail</span>
+                        </h2>
+
+                        <p className="text-4xl text-slate-500 font-medium leading-relaxed max-w-4xl border-l-8 border-gold-400 pl-8">
+                            Assim que o pagamento for confirmado, verifique sua 
+                            <span className="text-slate-800 font-bold"> Caixa de Entrada</span> ou 
+                            <span className="text-slate-800 font-bold"> Spam</span>.
+                        </p>
+                    </div>
+
+                    {/* Right Decoration */}
+                    <div className="opacity-10">
+                         <Mail className="w-96 h-96 text-emerald-900" />
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
 
         {/* ==========================================
             MOBILE BANNER (400x400px)
@@ -151,13 +311,13 @@ const CheckoutBanner: React.FC = () => {
         <div className="flex flex-col items-center gap-4">
              <div className="flex items-center gap-4">
                  <span className="bg-slate-700 text-white px-4 py-1 rounded-full text-sm font-bold uppercase tracking-wider">
-                    Versão Mobile (400 x 400 px)
+                    Banner Checkout Mobile (400 x 400 px)
                  </span>
                  <button 
                     onClick={() => handleDownload('banner-mobile', 'banner_checkout_mobile.png')}
                     className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-full text-sm font-bold transition-colors shadow-lg"
                  >
-                    <Download className="w-4 h-4" /> Baixar PNG em Alta Definição (HD)
+                    <Download className="w-4 h-4" /> Baixar PNG
                  </button>
             </div>
 
@@ -221,6 +381,63 @@ const CheckoutBanner: React.FC = () => {
                     </div>
                 </div>
 
+            </div>
+        </div>
+
+        {/* ==========================================
+            EMAIL ACCESS BANNER - MOBILE (400x200px)
+           ========================================== */}
+        <div className="flex flex-col items-center gap-4 mt-4">
+             <div className="flex items-center gap-4">
+                 <span className="bg-emerald-800 text-white px-4 py-1 rounded-full text-sm font-bold uppercase tracking-wider">
+                    Banner Aviso E-mail Mobile (400 x 200 px)
+                 </span>
+                 <button 
+                    onClick={() => handleDownload('banner-email-mobile', 'banner_email_mobile.png')}
+                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-full text-sm font-bold transition-colors shadow-lg"
+                 >
+                    <Download className="w-4 h-4" /> Baixar PNG
+                 </button>
+            </div>
+
+            <div 
+            id="banner-email-mobile"
+            style={{ width: '400px', height: '200px' }}
+            className="bg-white relative flex items-center px-6 shadow-2xl overflow-hidden font-sans border-4 border-emerald-500 flex-shrink-0 selection:bg-none"
+            >
+                {/* Background Decor */}
+                <div className="absolute top-0 left-0 w-full h-2 bg-emerald-500"></div>
+                <div className="absolute bottom-0 left-0 w-full h-1 bg-gold-400"></div>
+                <div className="absolute right-0 top-0 h-full w-24 bg-gradient-to-l from-emerald-50 to-transparent"></div>
+
+                {/* Content Row */}
+                <div className="flex items-center gap-5 relative z-10 w-full">
+
+                    {/* Left: Icon */}
+                    <div className="bg-emerald-50 p-4 rounded-full relative ring-2 ring-emerald-100 flex-shrink-0">
+                        <Mail className="w-10 h-10 text-emerald-600" />
+                        <div className="absolute -top-1 -right-1 bg-green-500 rounded-full p-1.5 border-2 border-white shadow-sm">
+                            <Zap className="w-3 h-3 text-white fill-white" />
+                        </div>
+                    </div>
+
+                    {/* Right: Text */}
+                    <div className="flex-1">
+                        <div className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 font-black text-[9px] uppercase tracking-widest px-2 py-0.5 rounded-full mb-1 border border-emerald-200">
+                            <Zap className="w-2.5 h-2.5 fill-emerald-800" />
+                            Liberação Imediata
+                        </div>
+                        
+                        <h2 className="text-2xl font-black text-slate-800 leading-none mb-1">
+                            Acesso no<br/>
+                            <span className="text-emerald-600">Seu E-mail</span>
+                        </h2>
+
+                        <p className="text-slate-500 text-xs leading-tight font-medium">
+                            Login e senha enviados <strong className="text-emerald-700">agora</strong>.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
 

@@ -447,6 +447,7 @@ export default function App() {
           </Suspense>
 
           <Suspense fallback={<SectionLoader />}><OptionsComparison onCtaClick={() => scrollToSection('pricing')} /></Suspense>
+
           <Suspense fallback={<SectionLoader />}><FAQ /></Suspense>
           <Suspense fallback={<div className="h-20 bg-emerald-950" />}><Footer /></Suspense>
 
