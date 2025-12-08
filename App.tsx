@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import Hero from './components/Hero';
-import { Timer, Eye, Loader2, DollarSign } from 'lucide-react';
+import { Timer, Eye, Loader2, DollarSign, Activity, Users, ArrowRight, Lock } from 'lucide-react';
 import PixelEvents from './components/PixelEvents';
 
 // Eager load critical components
@@ -36,6 +36,61 @@ const SectionLoader = () => (
   </div>
 );
 
+// --- COMPONENTE: MÁSCARA DE ALTA DEMANDA (HOME) ---
+// Justificativa: "Muitos acessos" -> Força o clique -> Ativa o Back Redirect
+const EntryMask = ({ onUnlock, onlineUsers }: { onUnlock: () => void, onlineUsers: number }) => {
+  return (
+    <div className="fixed inset-0 z-[100] bg-emerald-950/98 backdrop-blur-xl flex items-center justify-center p-4 animate-in fade-in duration-700">
+      <div className="bg-white rounded-2xl max-w-xs md:max-w-sm w-full p-6 md:p-8 text-center shadow-2xl border-b-4 border-emerald-500 relative overflow-hidden">
+        
+        {/* Animated Background Line - Mantido pois é suave (Shine) e não pisca */}
+        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-transparent via-emerald-500 to-transparent animate-shine-effect"></div>
+
+        <div className="flex justify-center mb-6">
+          <div className="relative">
+            <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center border border-emerald-100 shadow-inner">
+               <Activity className="w-10 h-10 text-emerald-600" />
+            </div>
+            {/* Live Indicator - MANTIDO O PULSE AQUI (Ao Vivo) */}
+            <div className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse border-2 border-white shadow-sm tracking-wide uppercase">
+              Ao Vivo
+            </div>
+          </div>
+        </div>
+
+        <h2 className="text-xl md:text-2xl font-black text-emerald-950 mb-2 leading-tight uppercase tracking-tight">
+          Alta Demanda <br/>Identificada
+        </h2>
+        
+        <div className="bg-emerald-50 rounded-xl p-4 mb-6 border border-emerald-100">
+           <div className="flex items-center justify-center gap-2 text-emerald-800 font-bold text-sm mb-1">
+              <Users className="w-4 h-4 text-emerald-600" />
+              <span className="tabular-nums">{onlineUsers}</span>
+              <span>pessoas acessando agora</span>
+           </div>
+           <p className="text-[11px] text-emerald-600/80 leading-tight">
+             Para evitar instabilidade, estamos liberando o acesso por ordem de chegada.
+           </p>
+        </div>
+
+        {/* Botão estático (sem pulse) para mais seriedade */}
+        <button 
+          onClick={onUnlock}
+          className="w-full bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-black text-lg py-4 rounded-xl shadow-[0_10px_20px_-5px_rgba(5,150,105,0.4)] transform active:scale-95 transition-all flex items-center justify-center gap-2 group"
+        >
+          <span>LIBERAR MEU ACESSO</span>
+          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+        </button>
+        
+        <div className="mt-5 flex items-center justify-center gap-1.5 text-[10px] text-slate-400 uppercase tracking-widest font-medium">
+          <Lock className="w-3 h-3" /> 
+          Verificação de Segurança
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function App() {
   const [spotsLeft, setSpotsLeft] = useState(27); 
   const [showMobileCta, setShowMobileCta] = useState(false);
@@ -46,6 +101,9 @@ export default function App() {
   const [showDownsellPage, setShowDownsellPage] = useState(false);
   const [downsellStep, setDownsellStep] = useState<'offer1' | 'offer2'>('offer1');
   
+  // Estado para a Máscara de Alta Demanda (Force Click)
+  const [showEntryMask, setShowEntryMask] = useState(true);
+
   // Refs para estado sempre atualizado dentro dos Event Listeners
   const showDownsellPageRef = useRef(showDownsellPage);
   const downsellStepRef = useRef(downsellStep); 
@@ -63,16 +121,14 @@ export default function App() {
   }, [ultimatumType]);
 
   // =========================================================================
-  // TESTE A/B (Melhorado para garantir distribuição real)
+  // TESTE A/B
   // =========================================================================
   const [heroVariant] = useState<'green' | 'light'>(() => {
     try {
       if (typeof window !== 'undefined') {
-         // Tenta pegar do sessionStorage primeiro
          const savedSession = window.sessionStorage?.getItem('ab_hero_color');
          if (savedSession === 'green' || savedSession === 'light') return savedSession;
 
-         // Se não tiver na sessão, gera um novo baseado no tempo + random para evitar cache viciado
          const randomSeed = new Date().getTime() + Math.random();
          const variant = randomSeed % 2 > 1 ? 'green' : (Math.random() < 0.5 ? 'green' : 'light');
          
@@ -80,7 +136,7 @@ export default function App() {
          return variant;
       }
     } catch (e) { console.warn(e); }
-    return 'green'; // Default fallback
+    return 'green';
   });
 
   const hideStickyBars = sectionsHidingBars.size > 0;
@@ -94,53 +150,50 @@ export default function App() {
     if (!hasHistoryPushedRef.current) {
         window.history.pushState({ page: 'home' }, '', window.location.href);
         hasHistoryPushedRef.current = true;
+        // console.log("History State Pushed via Click (Mobile Safe)");
     }
   };
 
-  useEffect(() => {
-    // 1. GATILHO SILENCIOSO: Ao carregar, tenta injetar histórico na primeira interação
-    const handleInteraction = () => {
-        pushHistoryState();
-    };
+  // Handler para desbloquear a tela e ativar o Back Redirect no CLIQUE
+  const handleUnlockEntry = () => {
+    pushHistoryState(); // ATIVA O BACK REDIRECT 100% GARANTIDO
+    setShowEntryMask(false);
     
-    // 2. GATILHO DE SCROLL: Se o usuário rolar a página, ativa o redirect
+    // Toca um som sutil de "Acesso Permitido"
+    try {
+      const audio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=pop-39222.mp3");
+      audio.volume = 0.1;
+      audio.play().catch(() => {});
+    } catch (e) {}
+  };
+
+  useEffect(() => {
+    // Mantemos o listener de scroll como backup, mas o Mask é o principal
     const handleScrollInteraction = () => {
         if (window.scrollY > 50) {
             pushHistoryState();
-            // Remove o listener após ativar para performance
             window.removeEventListener('scroll', handleScrollInteraction);
         }
     };
 
-    window.addEventListener('mouseover', handleInteraction, { once: true });
-    window.addEventListener('click', handleInteraction, { once: true });
-    window.addEventListener('touchstart', handleInteraction, { once: true });
     window.addEventListener('scroll', handleScrollInteraction);
 
     // 3. Manipula o evento de "Voltar"
     const handlePopState = (event: PopStateEvent) => {
-        // LÓGICA 1: Se o modal de upgrade OU EXIT INTENT estiver aberto e clicar voltar
+        // LÓGICA 1: Modais
         if (ultimatumTypeRef.current === 'upgrade' || ultimatumTypeRef.current === 'exit') {
             event.preventDefault();
             setUltimatumType(null);
-            
-            // Abre o Downsell Step 1 (R$ 72,75)
             setShowDownsellPage(true);
             setDownsellStep('offer1');
-            
-            // Re-empurra estado para permitir voltar novamente para a oferta 2
             window.history.pushState({ page: 'downsell-triggered-1' }, '', window.location.href);
             return;
         }
 
-        // LÓGICA 2: Se já estiver na Oferta 1 (72,75) e clicar voltar -> IR PARA OFERTA 2 (37,00)
-        // OBS: A página LastChance agora tem um "SecurityMask" que força um clique.
-        // Esse clique lá dentro vai garantir que um novo estado seja empurrado.
+        // LÓGICA 2: Navegação interna do Downsell (Offer 1 -> Offer 2)
         if (showDownsellPageRef.current && downsellStepRef.current === 'offer1') {
             event.preventDefault();
             setDownsellStep('offer2');
-            
-            // Re-empurra estado para segurar na oferta 2 se tentar voltar de novo
             window.history.pushState({ page: 'downsell-step-2' }, '', window.location.href);
             
             if (typeof window !== 'undefined' && (window as any).fbq) {
@@ -149,15 +202,11 @@ export default function App() {
             return;
         }
 
-        // LÓGICA 3: Se a página de oferta (Downsell) AINDA NÃO está visível
+        // LÓGICA 3: Ativação do Downsell da Home
         if (!showDownsellPageRef.current) {
             event.preventDefault(); 
-            
-            // Mostra a página de Downsell (Começando pela oferta 1)
             setShowDownsellPage(true);
             setDownsellStep('offer1'); 
-            
-            // Empurra o estado DE NOVO
             window.history.pushState({ page: 'downsell-step-1' }, '', window.location.href);
             
             if (typeof window !== 'undefined' && (window as any).fbq) {
@@ -169,9 +218,6 @@ export default function App() {
     window.addEventListener('popstate', handlePopState);
 
     return () => {
-        window.removeEventListener('mouseover', handleInteraction);
-        window.removeEventListener('click', handleInteraction);
-        window.removeEventListener('touchstart', handleInteraction);
         window.removeEventListener('scroll', handleScrollInteraction);
         window.removeEventListener('popstate', handlePopState);
     };
@@ -218,8 +264,7 @@ export default function App() {
   useEffect(() => {
     const handleExitIntent = (e: MouseEvent) => {
       // Só ativa se não estiver no downsell, não tiver mostrado modal e tiver vagas
-      if (e.clientY < 10 && !hasShownExitIntent && spotsLeft > 0 && !showDownsellPage && !ultimatumType) {
-        // Empurra o estado 'exit' no histórico para que o botão voltar funcione
+      if (e.clientY < 10 && !hasShownExitIntent && spotsLeft > 0 && !showDownsellPage && !ultimatumType && !showEntryMask) {
         pushHistoryState(); 
         window.history.pushState({ modal: 'exit' }, '', window.location.href);
         
@@ -230,7 +275,7 @@ export default function App() {
     };
     document.addEventListener('mouseleave', handleExitIntent);
     return () => document.removeEventListener('mouseleave', handleExitIntent);
-  }, [hasShownExitIntent, spotsLeft, showDownsellPage, ultimatumType]);
+  }, [hasShownExitIntent, spotsLeft, showDownsellPage, ultimatumType, showEntryMask]);
 
   // Observer para esconder barras flutuantes
   useEffect(() => {
@@ -272,7 +317,6 @@ export default function App() {
   //  FLUXO DE VENDAS E MODAIS
   // ------------------------------------------------------------------
   
-  // 1. Clicou no botão de R$ 67
   const handleAnnualPlanClick = () => {
     window.history.pushState({ modal: 'upgrade' }, '', window.location.href);
     setUltimatumType('upgrade');
@@ -281,7 +325,6 @@ export default function App() {
     }
   };
 
-  // 2. ACEITOU Upgrade Vitalício (R$ 72,75)
   const handleAcceptUpgrade = () => {
     setUltimatumType(null);
     if (typeof window !== 'undefined' && (window as any).fbq) {
@@ -294,7 +337,6 @@ export default function App() {
     window.location.href = "https://pay.kiwify.com.br/8DJPyTz";
   };
 
-  // 3. RECUSOU Upgrade -> VAI PARA CHECKOUT DE R$ 67,00 IMEDIATAMENTE (Link Atualizado)
   const handleRejectUpgrade = () => {
      setUltimatumType(null); 
      
@@ -305,35 +347,37 @@ export default function App() {
         currency: 'BRL'
       });
     }
-    // LINK ATUALIZADO
     window.location.href = "https://pay.kiwify.com.br/CVZ4Q50";
   };
 
-  // 4. FUNÇÃO PARA PASSAR DE OFFER 1 (72,75) PARA OFFER 2 (37,00) NO DOWNSELL
   const handleNextDownsellStep = () => {
      setDownsellStep('offer2');
-     // Empurra mais um estado para segurar o usuário na oferta de R$ 37 se ele tentar voltar
      window.history.pushState({ page: 'downsell-step-2' }, '', window.location.href);
   };
 
   return (
     <>
       <PixelEvents />
+      
+      {/* OVERLAY DE ALTA DEMANDA (HOME) */}
+      {showEntryMask && !showDownsellPage && (
+        <EntryMask onUnlock={handleUnlockEntry} onlineUsers={onlineUsers} />
+      )}
+
       <Suspense fallback={null}><SalesNotifications /></Suspense>
 
-      {/* MODAL GERAL (Exit Intent, Upgrade, Scarcity) */}
+      {/* MODAL GERAL */}
       {ultimatumType && (
         <Suspense fallback={null}>
           <UltimatumModal 
             type={ultimatumType}
             onClose={() => {
               if (ultimatumType === 'upgrade') {
-                 handleRejectUpgrade(); // Recusou upgrade -> CHECKOUT 67 DIRETO
+                 handleRejectUpgrade(); 
               } else if (ultimatumType === 'exit') {
-                 // Fechou o modal de exit intent -> Ativa a página de oferta 37
                  setUltimatumType(null);
                  setShowDownsellPage(true);
-                 setDownsellStep('offer1'); // Tenta a oferta de 72 primeiro
+                 setDownsellStep('offer1');
               } else {
                  setUltimatumType(null);
               }
@@ -349,7 +393,7 @@ export default function App() {
         </Suspense>
       )}
 
-      {/* PÁGINA DE DOWNSELL - AGORA COM FLUXO: OFFER 1 (72) -> OFFER 2 (37) */}
+      {/* PÁGINA DE DOWNSELL */}
       {showDownsellPage ? (
         <Suspense fallback={<PageLoader />}>
           <LastChance 
@@ -359,7 +403,7 @@ export default function App() {
         </Suspense>
       ) : (
         // PÁGINA PRINCIPAL
-        <div className="min-h-screen flex flex-col font-sans relative bg-emerald-50 text-slate-900">
+        <div className={`min-h-screen flex flex-col font-sans relative bg-emerald-50 text-slate-900 ${showEntryMask ? 'overflow-hidden h-screen blur-sm' : ''}`}>
           
           <div className={`${getStickyBarColor()} text-white py-2 px-2 md:px-4 text-center text-[10px] md:text-sm font-semibold sticky top-0 z-50 shadow-xl flex flex-col md:flex-row justify-center items-center md:gap-6 gap-1 border-b border-white/10 transition-transform duration-500 ${hideStickyBars ? '-translate-y-full' : 'translate-y-0'}`}>
             <div className="flex items-center gap-2 drop-shadow-sm">

@@ -44,7 +44,7 @@ const Pricing: React.FC<PricingProps> = ({ onCtaClick, onAnnualPlanClick, spotsL
         
         {/* Header da Seção */}
         <div className="text-center mb-16">
-            <span className="text-emerald-600 font-bold tracking-widest uppercase text-xs mb-2 block animate-pulse">
+            <span className="text-emerald-600 font-bold tracking-widest uppercase text-xs mb-2 block">
                 Oferta por Tempo Limitado
             </span>
             <h2 className="text-3xl md:text-5xl font-bold text-emerald-950 font-serif mb-6">
@@ -103,8 +103,8 @@ const Pricing: React.FC<PricingProps> = ({ onCtaClick, onAnnualPlanClick, spotsL
 
             {/* PLANO 2: OFERTA IRRESISTÍVEL (VITALÍCIO) */}
             <div className="bg-emerald-950 rounded-3xl p-1 border-2 border-gold-500 shadow-2xl relative order-1 md:order-2 transform md:-translate-y-4 z-10">
-                {/* Badge de Melhor Escolha */}
-                <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-gold-500 to-yellow-500 text-emerald-950 px-6 py-2 rounded-full text-sm font-black uppercase tracking-wider shadow-lg flex items-center gap-2 whitespace-nowrap">
+                {/* Badge de Melhor Escolha - Z-Index Aumentado para 50 para garantir sobreposição correta */}
+                <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-gold-500 to-yellow-500 text-emerald-950 px-6 py-2 rounded-full text-sm font-black uppercase tracking-wider shadow-lg flex items-center gap-2 whitespace-nowrap z-50">
                     <Star className="w-4 h-4 fill-emerald-950" />
                     Mais Vendido
                 </div>
