@@ -91,6 +91,15 @@ const EntryMask = ({ onUnlock, onlineUsers }: { onUnlock: () => void, onlineUser
   );
 };
 
+// Helper para anexar UTMs aos links
+const appendUTMs = (url: string) => {
+  const currentSearch = window.location.search;
+  if (!currentSearch) return url;
+  
+  const separator = url.includes('?') ? '&' : '?';
+  return `${url}${separator}${currentSearch.substring(1)}`;
+};
+
 export default function App() {
   const [spotsLeft, setSpotsLeft] = useState(27); 
   const [showMobileCta, setShowMobileCta] = useState(false);
@@ -334,7 +343,8 @@ export default function App() {
         currency: 'BRL'
       });
     }
-    window.location.href = "https://pay.kiwify.com.br/8DJPyTz";
+    // MANTER PARÂMETROS UTM
+    window.location.href = appendUTMs("https://pay.kiwify.com.br/8DJPyTz");
   };
 
   const handleRejectUpgrade = () => {
@@ -347,7 +357,8 @@ export default function App() {
         currency: 'BRL'
       });
     }
-    window.location.href = "https://pay.kiwify.com.br/CVZ4Q50";
+    // MANTER PARÂMETROS UTM
+    window.location.href = appendUTMs("https://pay.kiwify.com.br/CVZ4Q50");
   };
 
   const handleNextDownsellStep = () => {

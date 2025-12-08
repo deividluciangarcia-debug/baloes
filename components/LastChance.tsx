@@ -6,6 +6,15 @@ interface LastChanceProps {
   onNextStep: () => void;
 }
 
+// Helper para anexar UTMs
+const appendUTMs = (url: string) => {
+  const currentSearch = window.location.search;
+  if (!currentSearch) return url;
+  
+  const separator = url.includes('?') ? '&' : '?';
+  return `${url}${separator}${currentSearch.substring(1)}`;
+};
+
 // --- NOVO COMPONENTE: MÁSCARA DE SEGURANÇA/INTERAÇÃO ---
 const SecurityMask = ({ onUnlock }: { onUnlock: () => void }) => {
   return (
@@ -116,7 +125,8 @@ const LastChance: React.FC<LastChanceProps> = ({ step, onNextStep }) => {
         currency: 'BRL'
       });
     }
-    setTimeout(() => { window.location.href = "https://pay.kiwify.com.br/8DJPyTz"; }, 300);
+    // GARANTIR UTMs
+    setTimeout(() => { window.location.href = appendUTMs("https://pay.kiwify.com.br/8DJPyTz"); }, 300);
   };
 
   // ESTA FUNÇÃO É CRÍTICA: Chama o prop que leva para o step offer2
@@ -135,7 +145,8 @@ const LastChance: React.FC<LastChanceProps> = ({ step, onNextStep }) => {
         currency: 'BRL'
       });
     }
-    setTimeout(() => { window.location.href = "https://pay.kiwify.com.br/Skd9Pnc"; }, 300);
+    // GARANTIR UTMs
+    setTimeout(() => { window.location.href = appendUTMs("https://pay.kiwify.com.br/Skd9Pnc"); }, 300);
   };
 
   return (

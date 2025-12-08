@@ -7,6 +7,15 @@ interface PricingProps {
   spotsLeft: number;
 }
 
+// Helper para anexar UTMs
+const appendUTMs = (url: string) => {
+  const currentSearch = window.location.search;
+  if (!currentSearch) return url;
+  
+  const separator = url.includes('?') ? '&' : '?';
+  return `${url}${separator}${currentSearch.substring(1)}`;
+};
+
 const Pricing: React.FC<PricingProps> = ({ onCtaClick, onAnnualPlanClick, spotsLeft }) => {
 
   const handleCheckout = (plan: 'annual' | 'lifetime') => {
@@ -34,7 +43,8 @@ const Pricing: React.FC<PricingProps> = ({ onCtaClick, onAnnualPlanClick, spotsL
     }
 
     setTimeout(() => {
-      window.location.href = "https://pay.kiwify.com.br/XpMRo1p";
+      // GARANTIR UTMs NO LINK
+      window.location.href = appendUTMs("https://pay.kiwify.com.br/XpMRo1p");
     }, 300);
   };
 
