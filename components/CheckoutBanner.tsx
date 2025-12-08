@@ -70,7 +70,8 @@ const CheckoutBanner: React.FC = () => {
   ];
 
   return (
-    <section className="py-20 bg-gray-200 overflow-x-auto">
+    // ADICIONADO: touch-pan-y para evitar bloqueio de scroll vertical no container
+    <section className="py-20 bg-gray-200 overflow-x-auto touch-pan-y">
       <div className="container mx-auto px-4 flex flex-col items-center gap-16">
         
         <div className="text-center">

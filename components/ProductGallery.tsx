@@ -169,7 +169,8 @@ const ProductGallery: React.FC = () => {
   });
 
   return (
-    <section id="product-gallery" className="py-20 bg-slate-100">
+    // ADICIONADO: touch-pan-y para permitir rolagem vertical suave no mobile
+    <section id="product-gallery" className="py-20 bg-slate-100 touch-pan-y">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-emerald-950 font-serif mb-4">
@@ -220,7 +221,8 @@ const ProductGallery: React.FC = () => {
                     <img 
                       src={optimizeImage(product.image, 400)} 
                       alt={product.name} 
-                      className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                      // ADICIONADO: will-change-transform para otimizar a performance da animação em mobile
+                      className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500 will-change-transform"
                       loading="lazy"
                       decoding="async"
                     />
