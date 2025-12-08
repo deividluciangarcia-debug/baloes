@@ -1,5 +1,6 @@
 import React from 'react';
 import { Calculator, Plus, TrendingUp, Wallet } from 'lucide-react';
+import InternalNav from './InternalNav';
 
 interface EarningsCalculatorProps {
   spotsLeft: number;
@@ -139,6 +140,10 @@ const EarningsCalculator: React.FC<EarningsCalculatorProps> = ({ spotsLeft }) =>
            </div>
 
         </div>
+
+        {/* NAVEGAÇÃO INTERNA REPETIDA */}
+        <InternalNav currentSection="earnings" />
+
       </div>
     </section>
   );

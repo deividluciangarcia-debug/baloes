@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Play, Lock, Star, Youtube } from 'lucide-react';
+import InternalNav from './InternalNav';
 
 interface FreePreviewProps {
   onCtaClick: () => void;
@@ -73,6 +74,9 @@ const FreePreview: React.FC<FreePreviewProps> = ({ onCtaClick }) => {
       {/* Background Decoration */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-gold-400/10 rounded-full blur-3xl -z-0"></div>
       <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-400/10 rounded-full blur-3xl -z-0"></div>
+      
+      {/* Container Background para o InternalNav se destacar melhor depois */}
+      <div className="absolute inset-0 bg-emerald-950/5 pointer-events-none"></div>
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-12">
@@ -151,6 +155,13 @@ const FreePreview: React.FC<FreePreviewProps> = ({ onCtaClick }) => {
           </div>
 
         </div>
+
+        {/* NAVEGAÇÃO INTERNA REPETIDA */}
+        {/* Usamos um container com fundo escuro para destacar o InternalNav nesta seção clara */}
+        <div className="mt-12 md:mt-16 bg-emerald-900 rounded-3xl p-4 md:p-8 shadow-inner">
+             <InternalNav currentSection="preview" />
+        </div>
+
       </div>
     </section>
   );

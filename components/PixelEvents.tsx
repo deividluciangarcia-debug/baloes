@@ -25,13 +25,10 @@ const PixelEvents: React.FC = () => {
         });
 
         // 2. Rastreamento Padrão LEAD (Otimização)
-        const valueBasedOnTime = Math.floor(ms / 60000); 
-
+        // REMOVIDO: Value e Currency para não confundir com compras reais
         (window as any).fbq('track', 'Lead', {
             content_name: `Engajamento - ${timeLabel}`, 
             content_category: 'Time Tracking',
-            value: valueBasedOnTime, 
-            currency: 'BRL',
             time_spent: timeLabel
         });
 

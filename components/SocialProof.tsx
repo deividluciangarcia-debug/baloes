@@ -9,7 +9,7 @@ const optimizeImage = (url: string, width = 100) => {
 
 // Componente para o efeito de "Marca-Texto" de Prosperidade
 const Highlight: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <span className="bg-emerald-100 text-emerald-800 font-black px-1.5 py-0.5 rounded mx-0.5 border-b-2 border-emerald-200 inline-block transform hover:scale-105 transition-transform cursor-default">
+  <span className="bg-emerald-100 text-emerald-800 font-black px-1.5 py-0.5 rounded mx-0.5 border-b-2 border-emerald-200 inline-block md:transform md:hover:scale-105 transition-transform cursor-default">
     {children}
   </span>
 );
@@ -51,9 +51,9 @@ const SocialProof: React.FC = () => {
 
   return (
     <section className="py-24 bg-slate-50 relative overflow-hidden">
-      {/* Elementos de Fundo */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-100 rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/2"></div>
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-gold-100 rounded-full blur-3xl opacity-50 translate-y-1/2 -translate-x-1/2"></div>
+      {/* Elementos de Fundo - Pointer Events None para não bloquear scroll */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-100 rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-gold-100 rounded-full blur-3xl opacity-50 translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
@@ -68,9 +68,10 @@ const SocialProof: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        {/* Adicionado touch-pan-y para permitir scroll vertical explicitamente em dispositivos touch */}
+        <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto touch-pan-y">
           {testimonials.map((t, idx) => (
-            <div key={idx} className="bg-white p-8 rounded-3xl shadow-lg border border-slate-100 flex flex-col h-full transform hover:-translate-y-2 transition-all duration-300 hover:shadow-2xl hover:border-emerald-200 group">
+            <div key={idx} className="bg-white p-8 rounded-3xl shadow-lg border border-slate-100 flex flex-col h-full md:transform md:hover:-translate-y-2 transition-all duration-300 md:hover:shadow-2xl md:hover:border-emerald-200 group will-change-transform">
               
               {/* Header do Card */}
               <div className="flex items-center gap-4 mb-6 border-b border-slate-100 pb-6">
