@@ -64,11 +64,11 @@ const SalesNotifications: React.FC = () => {
 
   return (
     <div 
-      className={`fixed z-50 flex items-center gap-3 bg-slate-900/95 backdrop-blur-md p-3 pr-5 rounded-lg shadow-2xl border-l-4 border-blue-500 
+      className={`fixed z-[60] flex items-center gap-3 bg-slate-900/95 backdrop-blur-md p-3 pr-5 rounded-lg shadow-2xl border-l-4 border-blue-500 
         w-[90%] max-w-[340px] md:w-auto ring-1 ring-white/10
         transition-all duration-[800ms] cubic-bezier(0.34, 1.56, 0.64, 1) transform
-        ${isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-90 pointer-events-none'}
-        bottom-4 left-1/2 -translate-x-1/2 md:translate-x-0 md:bottom-6 md:left-6 md:top-auto
+        ${isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-8 scale-90 pointer-events-none'}
+        top-14 left-1/2 -translate-x-1/2 md:translate-x-0 md:top-24 md:right-6 md:left-auto
       `}
     >
       {/* Ícone Lateral */}
