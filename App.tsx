@@ -434,7 +434,7 @@ export default function App() {
           </div>
 
           <Hero 
-            onCtaClick={() => scrollToSection('pricing')} 
+            onCtaClick={() => scrollToSection('how-it-works')} 
             onLearnMoreClick={() => scrollToSection('how-it-works')} 
             spotsLeft={spotsLeft}
             variant={heroVariant} 

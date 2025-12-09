@@ -1,5 +1,5 @@
 import React from 'react';
-import { PlayCircle, PartyPopper, DollarSign, ArrowRight, Calculator, Eye, ChevronDown } from 'lucide-react';
+import { PlayCircle, PartyPopper, DollarSign, ArrowRight, Calculator, Eye, ChevronDown, Image as ImageIcon } from 'lucide-react';
 
 const HowItWorks: React.FC = () => {
   const steps = [
@@ -58,22 +58,15 @@ const HowItWorks: React.FC = () => {
     scrollTo('free-preview');
   };
 
-  const handleBuyClick = () => {
+  const handleGalleryClick = () => {
     if (typeof window !== 'undefined' && (window as any).fbq) {
-        // Evento Personalizado de Navegação
-        (window as any).fbq('trackCustom', 'BTN-HUB-COMPRAR', {
+        // Evento Personalizado de Navegação (Interesse em Produto)
+        (window as any).fbq('trackCustom', 'BTN-HUB-GALERIA', {
             local: 'HowItWorks Section',
-            intent: 'Very High'
-        });
-        
-        // Opcional: Se considerar clicar aqui como 'Adicionar ao Carrinho'
-        (window as any).fbq('track', 'AddToCart', {
-            content_name: 'Hub Navegação - Começar Agora',
-            value: 97.00,
-            currency: 'BRL'
+            intent: 'High Interest'
         });
     }
-    scrollTo('pricing');
+    scrollTo('product-gallery');
   };
 
   return (
@@ -203,17 +196,17 @@ const HowItWorks: React.FC = () => {
                         </div>
                     </button>
 
-                    {/* Option 3: Buy (Primary) */}
+                    {/* Option 3: Product Gallery (REPLACES BUY) */}
                     <button 
-                        onClick={handleBuyClick}
-                        className="group bg-gradient-to-br from-gold-500 to-yellow-600 hover:from-white hover:to-white border border-gold-400 p-8 rounded-2xl transition-all duration-300 flex flex-col items-center gap-4 shadow-[0_0_20px_rgba(234,179,8,0.4)] transform hover:-translate-y-2"
+                        onClick={handleGalleryClick}
+                        className="group bg-white/5 hover:bg-white/10 border border-white/20 hover:border-blue-400 p-8 rounded-2xl transition-all duration-300 flex flex-col items-center gap-4 backdrop-blur-sm hover:shadow-[0_0_30px_rgba(96,165,250,0.2)]"
                     >
-                        <div className="bg-white/20 p-4 rounded-full text-white group-hover:text-emerald-950 group-hover:scale-110 transition-all">
-                            <DollarSign className="w-10 h-10" />
+                        <div className="bg-blue-500/20 p-4 rounded-full text-blue-300 group-hover:text-blue-950 group-hover:bg-blue-400 transition-colors">
+                            <ImageIcon className="w-10 h-10" />
                         </div>
                         <div className="text-center">
-                            <span className="block text-emerald-950 font-black text-xl mb-1 group-hover:text-emerald-900">COMEÇAR AGORA</span>
-                            <span className="text-emerald-900 text-sm font-bold opacity-80 group-hover:opacity-100">Garantir minha vaga!</span>
+                            <span className="block text-white font-bold text-xl mb-1">O que vou aprender?</span>
+                            <span className="text-blue-300 text-sm opacity-80 group-hover:opacity-100">Ver modelos e lucros</span>
                         </div>
                     </button>
 
